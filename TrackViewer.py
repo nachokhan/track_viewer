@@ -87,9 +87,11 @@ class Segment:
     def __init__(self):
         self.Points = []
         self.Color = "red"
+        self.__distance__ = -1
     
     def AddPoint(self, point):
         self.Points.append(point)
+        self.__distance__ = -1
 
     def SetColor(self, color):
         self.Color = color
@@ -100,8 +102,10 @@ class Segment:
     def GetSlope(self):
         return 0 # todo
 
-    def GetDistance(self, consider_elevation=True):
-        d = 0
-        for i in range (len(self.Points)-1):
-            d += self.Points[i].DistanceTo(self.Points[i+1], consider_elevation)        
-        return d
+    def GetDistance(self, consider_elevation=True):        
+        if self.__distance__ == -1:
+            d = 0
+            for i in range (len(self.Points)-1):
+                d += self.Points[i].DistanceTo(self.Points[i+1], consider_elevation)
+                self.__distance__ = d
+        return self.__distance__
