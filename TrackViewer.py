@@ -1,3 +1,6 @@
+from geopy import distance
+import math
+
 #########
 # TrackFile Class represents an object that reads a text file with gps
 # segments and saves this data as a List Of Segments.
@@ -19,7 +22,6 @@ class TrackFile:
             self.AnalyzeLine(line)
 
         f.close()
-        return lines
 
     ###
     # Analyzes a line in order to extract a gps point or a "start of segment"
@@ -34,9 +36,9 @@ class TrackFile:
             self.Segment.SetColor(color)
 
         elif first_element == 'type' :
-            if self.Segment.Points.count('') > 0:
-                self.ListOfSegments.append(self.Segment)
-            self.Segment = Segment()
+            self.Segment = Segment()          
+            self.ListOfSegments.append(self.Segment)           
+        
     
     ###
     # Gets the color part of the text line
@@ -62,8 +64,19 @@ class GPSPoint:
         self.Longitude = float(lon)
         self.Elevation = float(elev)
 
-    def DisntaceTo(self, another_point):
-        return 0 # todo
+    def DistanceTo(self, point, consider_elevation=True):
+        this_point = (self.Latitude, self.Longitude)
+        other_point = (point.Latitude, point.Longitude)
+
+        delta_x = distance.distance(this_point, other_point).meters
+        delta_y = abs(self.Elevation - point.Elevation)
+        
+        if consider_elevation:
+            d = math.sqrt( delta_x*delta_x + delta_y*delta_y)
+        else:
+            d = delta_x
+        
+        return d
 
 
 #########
@@ -87,6 +100,8 @@ class Segment:
     def GetSlope(self):
         return 0 # todo
 
-    def GetDistance(self):
-        return 0 # todo
-
+    def GetDistance(self, consider_elevation=True):
+        d = 0
+        for i in range (len(self.Points)-1):
+            d += self.Points[i].DistanceTo(self.Points[i+1], consider_elevation)        
+        return d
