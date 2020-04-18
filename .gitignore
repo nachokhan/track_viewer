@@ -1,3 +1,5 @@
 .vscode/settings.json
-__pycache__/TrackFile.cpython-37.pyc
-__pycache__/TrackViewer.cpython-37.pyc
+__pycache__/*.pyc
+.vscode/.ropeproject/objectdb
+.vscode/.ropeproject/config.py
+.vscode/launch.json
