@@ -1,5 +1,6 @@
-from geopy import distance
-import math
+from math import sin, cos, sqrt, atan2, radians
+
+from geopy.distance import great_circle, geodesic, vincenty, distance
 
 #########
 # TrackFile Class represents an object that reads a text file with gps
@@ -11,9 +12,7 @@ class TrackFile:
         self.Segment = Segment()
         self.ListOfSegments = []
 
-    ###
-    # Reads a text File by analizing and saving all the segments in the file
-    ###
+    # Reads a text File by analizing and saving all the segments in the file    
     def ReadFile(self, fileName):
 
         f = open(fileName, "r")
@@ -23,9 +22,7 @@ class TrackFile:
 
         f.close()
 
-    ###
     # Analyzes a line in order to extract a gps point or a "start of segment"
-    ###
     def AnalyzeLine(self, line):
         first_element = line.split(",")[0]
 
@@ -40,16 +37,12 @@ class TrackFile:
             self.ListOfSegments.append(self.Segment)           
         
     
-    ###
     # Gets the color part of the text line
-    ###
     def GetColor(self, line):
         values = line.split(',')
         return values[-1][:-1]
     
-    ###
     # Gets the GPS point of the text line.
-    ###
     def GetPoint (self, line):
         values = line.split(',')
         return GPSPoint(values[1],values[2],values[3])
@@ -64,19 +57,38 @@ class GPSPoint:
         self.Longitude = float(lon)
         self.Elevation = float(elev)
 
-    def DistanceTo(self, point, consider_elevation=True):
+    def DistanceTo(self, point, method):
         this_point = (self.Latitude, self.Longitude)
         other_point = (point.Latitude, point.Longitude)
 
-        delta_x = distance.distance(this_point, other_point).meters
+        #if method == "geopy":
+        #    delta_x = distance(this_point, other_point).meters
+        #elif method == "great_circle":
+        #    delta_x = great_circle(this_point, other_point).meters
+        #elif method == "vincenty":
+        #    delta_x = vincenty(this_point, other_point).meters
+        #elif method == "geodesic":
+        #    delta_x = geodesic(this_point, other_point).meters
+        #else:
+        #    delta_x = self.h_distance_to(point)
+
+        delta_x = self.h_distance_to(point)
         delta_y = abs(self.Elevation - point.Elevation)
         
-        if consider_elevation:
-            d = math.sqrt( delta_x*delta_x + delta_y*delta_y)
-        else:
-            d = delta_x
+        d = sqrt( delta_x**2 + delta_y**2)
         
         return d
+    
+    def h_distance_to(self, p2):
+        R = 6373.0
+        lat1, lon1 = radians(self.Latitude), radians(self.Longitude)
+        lat2, lon2 = radians(p2.Latitude), radians(p2.Longitude)
+        dlon = lon2 - lon1
+        dlat = lat2 - lat1
+        a = (sin(dlat/2))**2 + cos(lat1) * cos(lat2) * (sin(dlon/2))**2
+        c = 2 * atan2(sqrt(a), sqrt(1-a))
+        distance = R * c * 1000
+        return distance
 
 
 #########
@@ -87,11 +99,9 @@ class Segment:
     def __init__(self):
         self.Points = []
         self.Color = "red"
-        self.__distance__ = -1
-    
+   
     def AddPoint(self, point):
         self.Points.append(point)
-        self.__distance__ = -1
 
     def SetColor(self, color):
         self.Color = color
@@ -102,10 +112,10 @@ class Segment:
     def GetSlope(self):
         return 0 # todo
 
-    def GetDistance(self, consider_elevation=True):        
-        if self.__distance__ == -1:
-            d = 0
-            for i in range (len(self.Points)-1):
-                d += self.Points[i].DistanceTo(self.Points[i+1], consider_elevation)
-                self.__distance__ = d
+    def GetDistance(self, method):        
+        d = 0
+        points_range = len(self.Points)-1
+        for i in range (points_range):
+            d += self.Points[i].DistanceTo(self.Points[i+1])
+            self.__distance__ = d
         return self.__distance__
