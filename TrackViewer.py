@@ -1,6 +1,6 @@
 from math import sin, cos, sqrt, atan2, radians
 
-from geopy.distance import great_circle, geodesic, vincenty, distance
+#from geopy.distance import great_circle, geodesic, vincenty, distance
 
 #########
 # TrackFile Class represents an object that reads a text file with gps
@@ -58,9 +58,8 @@ class GPSPoint:
         self.Elevation = float(elev)
 
     def DistanceTo(self, point, method):
-        this_point = (self.Latitude, self.Longitude)
-        other_point = (point.Latitude, point.Longitude)
-
+        #this_point = (self.Latitude, self.Longitude)
+        #other_point = (point.Latitude, point.Longitude)
         #if method == "geopy":
         #    delta_x = distance(this_point, other_point).meters
         #elif method == "great_circle":
@@ -75,8 +74,7 @@ class GPSPoint:
         delta_x = self.h_distance_to(point)
         delta_y = abs(self.Elevation - point.Elevation)
         
-        d = sqrt( delta_x**2 + delta_y**2)
-        
+        d = sqrt( delta_x**2 + delta_y**2)        
         return d
     
     def h_distance_to(self, p2):
