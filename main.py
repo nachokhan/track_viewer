@@ -1,5 +1,7 @@
-import matplotlib.pyplot as plt
-import numpy as np
+#import matplotlib.pyplot as plt
+#import numpy as np
+import timeit
+from datetime import datetime
 
 from TrackViewer import TrackFile
 
@@ -7,22 +9,30 @@ from TrackViewer import TrackFile
 #plt.plot(x, np.sin(x))       # Plot the sine of each x point
 #plt.show()                   # Display the plot
 
-t = TrackFile()
+def Hacer(lista, metodo):   
+    distancia = 0
+    t1 = datetime.now()
 
+    for segment in lista:
+        distancia += segment.GetDistance(metodo, False)
+
+    t2 = datetime.now()
+    time = abs(t2-t1)
+
+    return (time, distancia)
+
+
+t = TrackFile()
 t.ReadFile("./data/rincon1.txt")
 
-print ("SEGMENTOS: " + str(len(t.ListOfSegments)))
+time, distancia = Hacer(t.ListOfSegments, "own")
+print ("OWN\tFinal = " + str(distancia/1000) + " km\tTIME: " + str(time.microseconds) + " us")
 
-distancia1 = 0
-for segment in t.ListOfSegments:
-    distancia1 += segment.GetDistance(False)
+time, distancia = Hacer(t.ListOfSegments, "geodesic")
+print ("GEODE\tFinal = " + str(distancia/1000) + " km\tTIME: " + str(time.microseconds) + " us")
 
-print ("NO ELEV Final = " + str(distancia1/1000) + " km")
+time, distancia = Hacer(t.ListOfSegments, "great_circle")
+print ("GREAT\tFinal = " + str(distancia/1000) + " km\tTIME: " + str(time.microseconds) + " us")
 
-distancia2 = 0
-for segment in t.ListOfSegments:
-    distancia2 += segment.GetDistance(True)
-
-print ("SI ELEV Final = " + str(distancia2/1000) + " km")
-
-print ("Diferencia es: " + str(abs(distancia1-distancia2)) + " metros")
+time, distancia = Hacer(t.ListOfSegments, "geopy")
+print ("GEOPY\tFinal = " + str(distancia/1000) + " km\tTIME: " + str(time.microseconds) + " us")
