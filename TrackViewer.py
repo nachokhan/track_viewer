@@ -7,8 +7,8 @@ from math import sin, cos, sqrt, atan2, radians
 class TrackFile:
 
     def __init__ (self):
-        self.Segment = Segment()
-        self.ListOfSegments = []
+        self.__segment = Segment()
+        self.__listOfSegments = []
 
     # Reads a text File by analizing and saving all the segments in the file    
     def ReadFile(self, fileName):
@@ -27,12 +27,12 @@ class TrackFile:
         if first_element == 'T':
             point = self.GetPoint(line)
             color = self.GetColor(line)
-            self.Segment.AddPoint(point)
-            self.Segment.SetColor(color)
+            self.__segment.AddPoint(point)
+            self.__segment.SetColor(color)
 
         elif first_element == 'type' :
-            self.Segment = Segment()          
-            self.ListOfSegments.append(self.Segment)           
+            self.__segment = Segment()          
+            self.__listOfSegments.append(self.__segment)           
         
     
     # Gets the color part of the text line
@@ -44,6 +44,9 @@ class TrackFile:
     def GetPoint (self, line):
         values = line.split(',')
         return GPSPoint(values[1],values[2],values[3])
+
+    def GetSegments(self):
+        return self.__listOfSegments
 
 
 #########
@@ -94,7 +97,7 @@ class Segment:
     def GetSlope(self):
         return 0 # todo
 
-    def GetDistance(self, method):        
+    def GetDistance(self):        
         d = 0
         points_range = len(self.Points)-1
         for i in range (points_range):
