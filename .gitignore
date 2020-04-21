@@ -3,4 +3,5 @@ __pycache__/*.pyc
 .vscode/.ropeproject/objectdb
 .vscode/.ropeproject/config.py
 .vscode/launch.json
-/data/*
+data/*
+data/rincon1.txt
