@@ -36,25 +36,23 @@ class TrackFile:
         first_element = line.split(",")[0]
 
         if first_element == 'T':
-            point = self.getPoint(line)
-            color = self.getColor(line)
+            point, name, color = self.GetValuesFromLine(line)
             self.__segment.AddPoint(point)
             self.__segment.SetColor(color)
+            self.__segment.SetName(name)
 
         elif first_element == 'type' :
             self.__segment = Segment()          
             self.__track.AddSegment(self.__segment)           
         
-    
-    # Returns the color part of the text line
-    def getColor(self, line):
-        values = line.split(',')
-        return values[-1][:-1]
-    
-    # Returns the GPS point of the text line.
-    def getPoint (self, line):
-        values = line.split(',')
-        return GPSPoint(values[1],values[2],values[3])
+    # Read the lines and obtain the values
+    def GetValuesFromLine(self, line):
+        values = line.split(",")
+        p = GPSPoint(values[1],values[2],values[3])
+        name = values[4]
+        color = values[5][:-1]
+        return (p, name, color)
+
 
     # Returns all the segments in the file.
     def GetTrack(self):
@@ -97,6 +95,7 @@ class Segment:
     def __init__(self):
         self.__points = []
         self.__color = "red"
+        self.__name = "noname"
    
     def AddPoint(self, point):
         """ Adds a new GPS point to the segment """
@@ -113,6 +112,14 @@ class Segment:
     def GetSlope(self):
         """ Returns the slope of the whole segment """
         return 0 # todo
+
+    def SetName(self, name):
+        """ Sets the name of the segment """
+        self.__name = name
+
+    def GetName(self):
+        """ Returns the name of the segment """
+        return self.__name
 
     def GetPoints(self):
         """ Return a list of points """
