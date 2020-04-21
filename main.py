@@ -11,10 +11,7 @@ def PT(track, max_cols = 4, intersection_window = 50):
 
     dist_acc = 0    #Accumulated distance over all segments
 
-    segments = track.GetSegments()
-
-    scat_x = [0]
-    scat_y = [segments[0].GetPoints()[0].Elevation]
+    segments = track.GetSegments()    
     inters_x = []
 
     all_x = []
@@ -47,8 +44,6 @@ def PT(track, max_cols = 4, intersection_window = 50):
         x.append(dist_acc)
         all_y.append(points[i+1].Elevation)
         all_x.append(dist_acc)
-        scat_x.append(dist_acc)
-        scat_y.append(points[i+1].Elevation)
         inters_x.append(len(all_x)-1)            
 
         main_ax.fill_between(x, y, color = color, alpha = 0.5)
@@ -85,8 +80,14 @@ def PT(track, max_cols = 4, intersection_window = 50):
         y_max = max(all_y)
         y_min = min(all_y)
 
+
+    for i in inters_x:
+        int_x = all_x[i]
+        int_y = all_y[i]
+        main_ax.scatter(int_x, int_y, color = "black", edgecolor="white", marker = '^')    
+
     main_ax.set_ylim(y_min-10, y_max+20)
-    main_ax.scatter(scat_x, scat_y, color = "black", edgecolor="white", marker = '^')
+    
 
     plt.show()
 
@@ -98,4 +99,4 @@ def Hacer(fileName):
     PT(track, max_cols=5)
 
 
-Hacer("./data/VIEW_04_05_400.txt")
+Hacer("./data/rincon1.txt")
