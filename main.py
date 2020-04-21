@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 import numpy as np
 import math
 import random
@@ -67,23 +68,30 @@ def PT(track, max_cols = 0, intersection_window = 50):
     # Initiliaze graphics
     fig = plt.figure(figsize=(25, 15))
     fig.suptitle("Elevation Map Analysis")
-    grid = plt.GridSpec(max_rows, max_cols, wspace=0.2, hspace=0.3)    
+    grid = plt.GridSpec(max_rows, max_cols, wspace=0.2, hspace=0.8)    
 
     # DRAW MAIN ELEVATION MAP
     main_ax = fig.add_subplot(grid[0, 0:])    # first row reserved for total elevation
+
     for i in range (0, len(x_segments)):        
         main_ax.fill_between(x_segments[i], y_segments[i], color = c_segments[i], alpha = 0.5)  # Should Move this to GRAPH PART
 
     main_ax.set_title("Elevation Map")
-    main_ax.set_xlabel("Distance (m)")
+    main_ax.set_xlabel("Distance (Km)")
     main_ax.set_ylabel("Elevation(m)")
-    main_ax.set_ylim(y_min-10, y_max+20)
-
+    main_ax.set_ylim(y_min-10, y_max+60)
+    # Scale m into Km and add the last X value as a text (to avoid possible overlapping)
+    x_scale = 1/1000
+    ticks_x = ticker.FuncFormatter(lambda x, pos: '{0:g}'.format(x*x_scale))
+    main_ax.xaxis.set_major_formatter(ticks_x)
+    main_ax.annotate(str( round(all_x[-1]*x_scale,2)), (all_x[-1], all_y[-1]))
+    
+    
     # SCATTER PART
     for i in inters_x:
         int_x = all_x[i]
         int_y = all_y[i]
-        main_ax.scatter(int_x, int_y, color = "black", edgecolor="white", marker = '^') 
+        main_ax.scatter(int_x, int_y, color = "black", edgecolor="white", marker = '^')            
 
 
     # DRAW EACH INTERSECTION
@@ -111,7 +119,9 @@ def PT(track, max_cols = 0, intersection_window = 50):
         ax_.set_ylim( min_y, max_y)
         ax_.set_xlim( min_x, max_x)
         ax_.axvline(all_x[inters_x[i]], color = "red")
-        ax_.set_title("Intersection #" + str(i+1))
+        txt_x = str(round(all_x[inters_x[i]]/1000, 2))          # X coord (text for the title)
+        txt = "[#" + str(i+1) + "] (" + txt_x + " km)"   # ALL the text
+        ax_.set_title(txt)
         ax.append(ax_)
     
     plt.show()
