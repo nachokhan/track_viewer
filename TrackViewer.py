@@ -1,3 +1,14 @@
+""" TrackViewer Module
+This module manages all the needed functions to plot the
+Track info saved in the data files.
+
+This data files are TXT in the form indicated by the
+GPS Visualizer (https://www.gpsvisualizer.com/)
+
+Info about the format is available under:
+https://www.gpsvisualizer.com/tutorials/tracks.html
+"""
+
 from math import sin, cos, sqrt, atan2, radians
 
 #########
@@ -8,45 +19,47 @@ class TrackFile:
 
     def __init__ (self):
         self.__segment = Segment()
-        self.__listOfSegments = []
+        self.__track = Track()
 
     # Reads a text File by analizing and saving all the segments in the file    
     def ReadFile(self, fileName):
-
+        """ Reads a TXT File with Segments and stores them """
         f = open(fileName, "r")
         lines = f.readlines()
         for line in lines:
-            self.AnalyzeLine(line)
+            self.analyzeLine(line)
 
         f.close()
 
     # Analyzes a line in order to extract a gps point or a "start of segment"
-    def AnalyzeLine(self, line):
+    def analyzeLine(self, line):
         first_element = line.split(",")[0]
 
         if first_element == 'T':
-            point = self.GetPoint(line)
-            color = self.GetColor(line)
+            point = self.getPoint(line)
+            color = self.getColor(line)
             self.__segment.AddPoint(point)
             self.__segment.SetColor(color)
 
         elif first_element == 'type' :
             self.__segment = Segment()          
-            self.__listOfSegments.append(self.__segment)           
+            self.__track.AddSegment(self.__segment)           
         
     
-    # Gets the color part of the text line
-    def GetColor(self, line):
+    # Returns the color part of the text line
+    def getColor(self, line):
         values = line.split(',')
         return values[-1][:-1]
     
-    # Gets the GPS point of the text line.
-    def GetPoint (self, line):
+    # Returns the GPS point of the text line.
+    def getPoint (self, line):
         values = line.split(',')
         return GPSPoint(values[1],values[2],values[3])
 
-    def GetSegments(self):
-        return self.__listOfSegments
+    # Returns all the segments in the file.
+    def GetTrack(self):
+        """ Returns the Track readed fro mthe file """
+        return self.__track
 
 
 #########
@@ -77,30 +90,82 @@ class GPSPoint:
 
 
 #########
-# Segments represent a collection of GPS Points that were defined
+# Segments represents a collection of GPS Points that were defined
 # as a Segment, that means, a part of whole route.
 #########
 class Segment:
     def __init__(self):
-        self.Points = []
-        self.Color = "red"
+        self.__points = []
+        self.__color = "red"
    
     def AddPoint(self, point):
-        self.Points.append(point)
+        """ Adds a new GPS point to the segment """
+        self.__points.append(point)
 
     def SetColor(self, color):
-        self.Color = color
+        """ Sets the color to plot the segment """
+        self.__color = color
     
     def GetColor(self):
-        return self.Color
+        """ Returns the color to plot the segment """
+        return self.__color
 
     def GetSlope(self):
+        """ Returns the slope of the whole segment """
         return 0 # todo
 
-    def GetDistance(self):        
+    def GetPoints(self):
+        """ Return a list of points """
+        return self.__points
+
+    def GetLength(self):
+        """ Returns the lenght of the whole segment in meters """      
         d = 0
-        points_range = len(self.Points)-1
+        points_range = len(self.__points)-1
         for i in range (points_range):
-            d += self.Points[i].DistanceTo(self.Points[i+1])
+            d += self.__points[i].DistanceTo(self.__points[i+1])
             self.__distance__ = d
         return self.__distance__
+
+    def GetElevationExtremes(self):
+        """ Returns the maximum and the minimum elevations of the segment"""
+        max = min = self.__points[0].Elevation
+        for p in self.__points:
+            if p.Elevation > max: max = p.Elevation
+            if p.Elevation < min: min = p.Elevation
+
+        return (min, max)
+
+
+#########
+# Track represents a collection of Segments (ideally correlatives segments)
+#########
+class Track:
+    def __init__(self):
+        self.__segments = []
+    
+    def AddSegment(self, segment):
+        """ Add a new segment to the track """
+        self.__segments.append(segment)
+    
+    def GetLength(self):
+        """ Returns the length of the whole Track """
+        d = 0
+        for segment in self.__segments:
+            d += segment.GetLength()
+        return d
+
+    def GetSegments(self):
+        """ Returns all the segments in the track """
+        return self.__segments
+
+    def GetElevationExtremes(self):
+        """ Returns the maximum and the minimum elevations of the track"""
+        min, max = self.__segments[0].GetElevationExtremes()
+        for s in self.__segments:
+            m, M = s.GetElevationExtremes()
+            if M > max: max = M
+            if m < min: min = m
+
+        return (min, max)
+
