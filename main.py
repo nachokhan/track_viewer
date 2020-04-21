@@ -4,92 +4,13 @@ import math
 
 from TrackViewer import TrackFile
 
-def PlotTrack(track):
-
-    fig = plt.figure(figsize=(20,15))    
-    ax1 = fig.add_subplot(121)
-    ax2 = fig.add_subplot(122)
-
-    dist_acc = 0    #Accumulated distance over all segments
-
-    x_min = 0.0
-    x_max = 112100.0
-    y_min = 9000
-    y_max = 0
-
-    segments = track.GetSegments()
-
-    scat_x = [0]
-    scat_y = [segments[0].GetPoints()[0].Elevation]
-
-    all_x = []
-    all_y = []
-
-    for segment in segments:
-
-        x = []  # x must be calculated from gps points
-        y = []
-        color = segment.GetColor()
-        points = segment.GetPoints()
-        cant_points = len(points)-1
-
-        # calculate distance for points (0-->1), (1-->2) ... (N-1-->N)
-        for i in range(cant_points):
-            if(dist_acc >= x_min and dist_acc <= x_max):
-                y.append(points[i].Elevation)                
-                x.append(dist_acc)
-                all_y.append(points[i].Elevation)
-                all_x.append(dist_acc)
-
-            dist_acc += points[i].DistanceTo(points[i+1])
-        
-        # last points are not contempled in first "for loop" we add them here
-        if(dist_acc >= x_min and dist_acc <= x_max):
-            y.append(points[i+1].Elevation)
-            x.append(dist_acc)
-            all_y.append(points[i+1].Elevation)
-            all_x.append(dist_acc)
-            scat_x.append(dist_acc)
-            scat_y.append(points[i+1].Elevation)
-
-        if y:
-            if max(y) > y_max : y_max = max(y)    
-            if min(y) < y_min : y_min = min(y)
-
-        ax1.fill_between(x, y, color = color)
-
-
-
-
-    max_cols = 4
-    window = 200
-    intersections = len(scat_x) -2  # should't consider begin & end of track
-
-    ax = fig.axes
-    rows = math.ceil(intersections/max_cols)
-    ax[0].change_geometry()
-    for i in range(intersections):
-        row = math.ceil(i/max_cols)
-        col = i % max_cols
-        m_l = scat_x[i]-window     # middle to left
-        m_r = scat_x[i]-window     # middle to right
-        ax[i+1] = fig.add_subplot(row, col, i)
-        ax[i+1].plot(all_x[m_l:m_r], all_y[m_l:m_r])
-
-    ax1.set_ylim(y_min-10, y_max+10)
-    ax1.scatter(scat_x, scat_y, color = "black", edgecolor="white", marker = '^')
-
-    plt.show()
-
-
 def PT(track):
 
-    max_cols = 4   
+    max_cols = 4
+    intersections = len (track.GetSegments()) - 1
+    max_rows = math.ceil (intersections / max_cols) + 1
     intersection_window = 50
 
-    fig = plt.figure(figsize=(25, 15))
-    grid = plt.GridSpec(3, max_cols, wspace=0.2, hspace=0.2)
-    main_ax = fig.add_subplot(grid[0, 0:])    # first row reserved for total elevation
 
     dist_acc = 0    #Accumulated distance over all segments
 
@@ -106,6 +27,12 @@ def PT(track):
 
     all_x = []
     all_y = []
+
+    # Initiliaze graphics
+    fig = plt.figure(figsize=(25, 15))
+    grid = plt.GridSpec(max_rows, max_cols, wspace=0.2, hspace=0.2)
+    main_ax = fig.add_subplot(grid[0, 0:])    # first row reserved for total elevation
+
 
     for segment in segments:
 
@@ -142,8 +69,6 @@ def PT(track):
         main_ax.fill_between(x, y, color = color)
  
    
-    intersections = len(scat_x) -2  # should't consider begin & end of track
-   
     ax = []
 
     for i in range(0, intersections):        
@@ -155,7 +80,7 @@ def PT(track):
         y_values = all_y[m_l:m_r]
 
         ax_ = fig.add_subplot(grid[row, col], ylim = 1000)
-        ax_.plot(x_values, y_values)
+        ax_.plot(x_values, y_values)        
         ax_.set_ylim( min(y_values), max(y_values))
         ax_.set_xlim( min(x_values), max(x_values))
         ax_.axvline(all_x[inters_x[i]], color = "red")
@@ -168,11 +93,11 @@ def PT(track):
     plt.show()
 
 
-def Hacer():
+def Hacer(fileName):
     t = TrackFile()
-    t.ReadFile("./data/rincon1.txt")
+    t.ReadFile(fileName)
     track = t.GetTrack()
     PT(track)
 
 
-Hacer()
+Hacer("./data/VIEW_04_05_400.txt")
