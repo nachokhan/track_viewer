@@ -2,16 +2,21 @@ from TrackReader import TrackFileReader, Track
 from TrackViewer import TrackViewer, TrackPlotInfo
 
 def Hacer(fileName):
-    t = TrackFileReader()
-    t.ReadFile(fileName)
-    track = t.GetTrack()
+    
+    reader = TrackFileReader()
+    reader.ReadFile(fileName)
+    track = reader.GetTrack()
 
-    g = TrackViewer()
-    plotInfo = g.GetPlotInfo(track)
+    imageName = fileName[:-3] + "png"
 
-    ploti = g.BuildPlot(plotInfo)
+    pInfo = TrackPlotInfo(track)
+    pInfo.ExtractTrackData()
 
-    g.SavePlotAs(ploti, fileName[:-3] + "png")
+    viewer = TrackViewer()    
+    plot1 = viewer.BuildPlot(pInfo)
+    viewer.ShowPlot(plot1)
+
+
 
         
 

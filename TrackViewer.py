@@ -12,15 +12,17 @@ import TrackReader
 
 class TrackPlotInfo:
 
-    def __init__(self, x_seg, y_seg, c_seg, all_x, all_y, intersections):
-        self.__x_segs = x_seg
-        self.__y_segs = y_seg
-        self.__c_segs = c_seg
+    def __init__(self, track = None):
+        self.__track = track
+        self.__x_segs = []
+        self.__y_segs = []
+        self.__c_segs = []
+        self.__all_x_data = []
+        self.__all_y_data = []
+        self.__intersections = []
 
-        self.__all_x_data = all_x
-        self.__all_y_data = all_y
-
-        self.__intersections = intersections
+    def SetTrack(self, track):
+        self.__track = track
 
     def GetSegmentsData(self):
         return (self.__x_segs, self.__y_segs, self.__c_segs)
@@ -31,11 +33,71 @@ class TrackPlotInfo:
     def GetIntersectionsList(self):
         return self.__intersections
 
+    def ExtractTrackData(self):
+        """ Given a Track, examine and extract all the needed information for plotting """
+
+        if not self.__track:
+            raise NoTrackException("Track is null", "There is no track assigned to the instance. Maybe you forgot to call the constructor with a track or to call SetTrack Method")
+
+        segments = self.__track.GetSegments()
+
+        dist_acc = 0    #Accumulated distance over all segments
+            
+        inters_x = []   # indexes indicating where each segmentatios is
+        all_x = []      # all X data from first point to last one
+        all_y = []   
+
+        x_segments = []     # Array with X values of each segment
+        y_segments = []
+        c_segments = []     # Array of color segments
+
+        for segment in segments:
+
+            x = []  # x must be calculated from gps points
+            y = []
+            color = segment.GetColor()
+            points = segment.GetPoints()
+            cant_points = len(points)-1
+
+            # calculate distance for points (0-->1), (1-->2) ... (N-1-->N)
+            for i in range(cant_points):         
+                y.append(points[i].Elevation)                
+                x.append(dist_acc)
+                all_y.append(points[i].Elevation)
+                all_x.append(dist_acc)
+                dist_acc += points[i].DistanceTo(points[i+1])
+            
+            # last points are not contempled in first "for loop" we add them here        
+            y.append(points[i+1].Elevation)
+            x.append(dist_acc)
+            all_y.append(points[i+1].Elevation)
+            all_x.append(dist_acc)
+            inters_x.append(len(all_x)-1)           
+
+            x_segments.append(x)
+            y_segments.append(y)
+            c_segments.append(color)
+
+
+        # NOTE: In the whole method I worked with standalone variables instead of 
+        # # instance-attributes because in this way it wouldbe easier to extract the 
+        # method (e.g. to another class) without having to remove the "self." that would
+        # be needed if I were using instance attributes.
+        # I should now assign the variable's values to the instances attributes, of course:
+        self.__x_segs = x_segments
+        self.__y_segs = y_segments
+        self.__c_segs = c_segments
+        self.__all_x_data = all_x
+        self.__all_y_data = all_y
+        self.__intersections = inters_x
+        
+
 
 class TrackViewer:
 
+
     def BuildPlot(self, plotInfo, max_cols = 0, intersection_window = 50):
-        """ Given a TrackPlotInfo object, build the XXXXX Information Page. """   
+        """ Given a TrackPlotInfo object, build the XXXXX Information Page. """      
 
         x_segments,  y_segments, c_segments = plotInfo.GetSegmentsData()
         inters_x = plotInfo.GetIntersectionsList()
@@ -117,52 +179,6 @@ class TrackViewer:
         return plt
 
 
-    def GetPlotInfo(self, track):
-        """ Given a Track, examine and extract all the needed information for plotting """
-        segments = track.GetSegments()
-
-        dist_acc = 0    #Accumulated distance over all segments
-            
-        inters_x = []   # indexes indicating where each segmentatios is
-        all_x = []      # all X data from first point to last one
-        all_y = []   
-
-        x_segments = []     # Array with X values of each segment
-        y_segments = []
-        c_segments = []     # Array of color segments
-
-        for segment in segments:
-
-            x = []  # x must be calculated from gps points
-            y = []
-            color = segment.GetColor()
-            points = segment.GetPoints()
-            cant_points = len(points)-1
-
-            # calculate distance for points (0-->1), (1-->2) ... (N-1-->N)
-            for i in range(cant_points):         
-                y.append(points[i].Elevation)                
-                x.append(dist_acc)
-                all_y.append(points[i].Elevation)
-                all_x.append(dist_acc)
-                dist_acc += points[i].DistanceTo(points[i+1])
-            
-            # last points are not contempled in first "for loop" we add them here        
-            y.append(points[i+1].Elevation)
-            x.append(dist_acc)
-            all_y.append(points[i+1].Elevation)
-            all_x.append(dist_acc)
-            inters_x.append(len(all_x)-1)           
-
-            x_segments.append(x)
-            y_segments.append(y)
-            c_segments.append(color)
-
-        plotInfo = TrackPlotInfo(x_segments, y_segments, c_segments, all_x, all_y, inters_x)
-
-        return plotInfo
-
-
     def ShowPlot(self, plot):
         """ Shows the Plot in the Screen """
         plot.show()
@@ -170,3 +186,10 @@ class TrackViewer:
     def SavePlotAs(self, plot, fileName, transparent = True):
         """ Saves the Plot in a PNG image """
         plot.savefig(fileName)
+
+
+class NoTrackException(Exception):
+    """ Exceptio raised when trying to work with a null track """
+    def __init__(self, expression, message):
+        self.expression = expression
+        self.message = message
