@@ -1,5 +1,5 @@
 from TrackReader import TrackFileReader, Track
-from TrackViewer import TrackViewer
+from TrackViewer import TrackViewer, TrackPlotInfo
 
 def Hacer(fileName):
     t = TrackFileReader()
@@ -7,7 +7,12 @@ def Hacer(fileName):
     track = t.GetTrack()
 
     g = TrackViewer()
-    g.BulidPlot(track)
+    plotInfo = g.GetPlotInfo(track)
+
+    ploti = g.BuildPlot(plotInfo)
+
+    g.SavePlotAs(ploti, fileName[:-3] + "png")
+
         
 
 Hacer("./data/rincon1.txt")

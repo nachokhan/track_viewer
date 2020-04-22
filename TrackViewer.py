@@ -10,13 +10,38 @@ import matplotlib.ticker as ticker
 import math
 import TrackReader
 
+class TrackPlotInfo:
+
+    def __init__(self, x_seg, y_seg, c_seg, all_x, all_y, intersections):
+        self.__x_segs = x_seg
+        self.__y_segs = y_seg
+        self.__c_segs = c_seg
+
+        self.__all_x_data = all_x
+        self.__all_y_data = all_y
+
+        self.__intersections = intersections
+
+    def GetSegmentsData(self):
+        return (self.__x_segs, self.__y_segs, self.__c_segs)
+    
+    def GetAllPoints(self):
+        return (self.__all_x_data, self.__all_y_data)
+
+    def GetIntersectionsList(self):
+        return self.__intersections
+
+
 class TrackViewer:
 
-    def BluidPlot(self, track, max_cols = 0, intersection_window = 50):
+    def BuildPlot(self, plotInfo, max_cols = 0, intersection_window = 50):
+        """ Given a TrackPlotInfo object, build the XXXXX Information Page. """   
 
-        segments = track.GetSegments()
+        x_segments,  y_segments, c_segments = plotInfo.GetSegmentsData()
+        inters_x = plotInfo.GetIntersectionsList()
+        all_x , all_y = plotInfo.GetAllPoints()
 
-        intersections = len(segments) - 1
+        intersections = len(inters_x) - 1
 
         if max_cols == 0:
             if intersections <= 5:
@@ -27,9 +52,78 @@ class TrackViewer:
         # How many rows do we need to show N intersections
         max_rows = math.ceil (intersections / max_cols) + 1
 
+        y_max = max(all_y)
+        y_min = min(all_y)
+
+        # Initiliaze graphics
+        fig = plt.figure(figsize=(25, 15))
+        fig.suptitle("Elevation Map Analysis")
+        grid = plt.GridSpec(max_rows, max_cols, wspace=0.2, hspace=0.8)    
+
+        # DRAW MAIN ELEVATION MAP
+        main_ax = fig.add_subplot(grid[0, 0:])    # first row reserved for total elevation
+
+        for i in range (0, len(x_segments)):        
+            main_ax.fill_between(x_segments[i], y_segments[i], color = c_segments[i], alpha = 0.5)  # Should Move this to GRAPH PART
+
+        main_ax.set_title("Elevation Map")
+        main_ax.set_xlabel("Distance (Km)")
+        main_ax.set_ylabel("Elevation(m)")
+        main_ax.set_ylim(y_min-10, y_max+60)
+        # Scale m into Km and add the last X value as a text (to avoid possible overlapping)
+        x_scale = 1/1000
+        ticks_x = ticker.FuncFormatter(lambda x, pos: '{0:g}'.format(x*x_scale))
+        main_ax.xaxis.set_major_formatter(ticks_x)
+        main_ax.annotate(str( round(all_x[-1]*x_scale,2)), (all_x[-1], all_y[-1]))
+        
+        
+        # SCATTER POINTS
+        for i in inters_x:
+            int_x = all_x[i]
+            int_y = all_y[i]
+            main_ax.scatter(int_x, int_y, color = "black", edgecolor="white", marker = '^')            
+
+
+        # DRAW EACH INTERSECTION
+        ax = []
+        for i in range(0, intersections):        
+            row = math.floor(i/max_cols) + 1
+            col = i % max_cols
+
+            # Select the intervals & values around the segment's intersection
+            m_l = inters_x[i]-intersection_window       # middle to left
+            m_r = inters_x[i]+intersection_window       # middle to right
+            x_values_1 = all_x[m_l:inters_x[i]+1]
+            y_values_1 = all_y[m_l:inters_x[i]+1]
+            x_values_2 = all_x[inters_x[i]:m_r]
+            y_values_2 = all_y[inters_x[i]:m_r]
+            # Calculate min and max
+            min_x = min ( min(x_values_1), min (x_values_2))
+            min_y = min ( min(y_values_1), min (y_values_2))
+            max_x = max ( max(x_values_1), max (x_values_2))
+            max_y = max ( max(y_values_1), max (y_values_2))
+            # Plot everything
+            ax_ = fig.add_subplot(grid[row, col], ylim = 1000)
+            ax_.fill_between(x_values_1, y_values_1, color = c_segments[i], alpha=0.2)
+            ax_.fill_between(x_values_2, y_values_2, color = c_segments[i+1], alpha=0.2)
+            ax_.set_ylim( min_y, max_y)
+            ax_.set_xlim( min_x, max_x)
+            ax_.axvline(all_x[inters_x[i]], color = "red")
+            txt_x = str(round(all_x[inters_x[i]]/1000, 2))      # X coord (for the title) rounded in Km
+            txt = "[#" + str(i+1) + "] (" + txt_x + " km)"      # ALL the text
+            ax_.set_title(txt)
+            ax.append(ax_)
+        
+        return plt
+
+
+    def GetPlotInfo(self, track):
+        """ Given a Track, examine and extract all the needed information for plotting """
+        segments = track.GetSegments()
+
         dist_acc = 0    #Accumulated distance over all segments
             
-        inters_x = []   # indexes where the segmentatios are
+        inters_x = []   # indexes indicating where each segmentatios is
         all_x = []      # all X data from first point to last one
         all_y = []   
 
@@ -63,71 +157,16 @@ class TrackViewer:
             x_segments.append(x)
             y_segments.append(y)
             c_segments.append(color)
-        
-        y_max = max(all_y)
-        y_min = min(all_y)
+
+        plotInfo = TrackPlotInfo(x_segments, y_segments, c_segments, all_x, all_y, inters_x)
+
+        return plotInfo
 
 
-        #########################################################################################################################
-        # GRAPHICATION PART
+    def ShowPlot(self, plot):
+        """ Shows the Plot in the Screen """
+        plot.show()
 
-        # Initiliaze graphics
-        fig = plt.figure(figsize=(25, 15))
-        fig.suptitle("Elevation Map Analysis")
-        grid = plt.GridSpec(max_rows, max_cols, wspace=0.2, hspace=0.8)    
-
-        # DRAW MAIN ELEVATION MAP
-        main_ax = fig.add_subplot(grid[0, 0:])    # first row reserved for total elevation
-
-        for i in range (0, len(x_segments)):        
-            main_ax.fill_between(x_segments[i], y_segments[i], color = c_segments[i], alpha = 0.5)  # Should Move this to GRAPH PART
-
-        main_ax.set_title("Elevation Map")
-        main_ax.set_xlabel("Distance (Km)")
-        main_ax.set_ylabel("Elevation(m)")
-        main_ax.set_ylim(y_min-10, y_max+60)
-        # Scale m into Km and add the last X value as a text (to avoid possible overlapping)
-        x_scale = 1/1000
-        ticks_x = ticker.FuncFormatter(lambda x, pos: '{0:g}'.format(x*x_scale))
-        main_ax.xaxis.set_major_formatter(ticks_x)
-        main_ax.annotate(str( round(all_x[-1]*x_scale,2)), (all_x[-1], all_y[-1]))
-        
-        
-        # SCATTER PART
-        for i in inters_x:
-            int_x = all_x[i]
-            int_y = all_y[i]
-            main_ax.scatter(int_x, int_y, color = "black", edgecolor="white", marker = '^')            
-
-
-        # DRAW EACH INTERSECTION
-        ax = []
-        for i in range(0, intersections):        
-            row = math.floor(i/max_cols) + 1
-            col = i % max_cols
-
-            # Select the intervals & values around the segment's intersection
-            m_l = inters_x[i]-intersection_window       # middle to left
-            m_r = inters_x[i]+intersection_window       # middle to right
-            x_values_1 = all_x[m_l:inters_x[i]+1]
-            y_values_1 = all_y[m_l:inters_x[i]+1]
-            x_values_2 = all_x[inters_x[i]:m_r]
-            y_values_2 = all_y[inters_x[i]:m_r]
-            # Calculate min and max
-            min_x = min ( min(x_values_1), min (x_values_2))
-            min_y = min ( min(y_values_1), min (y_values_2))
-            max_x = max ( max(x_values_1), max (x_values_2))
-            max_y = max ( max(y_values_1), max (y_values_2))
-            # Plot everything
-            ax_ = fig.add_subplot(grid[row, col], ylim = 1000)
-            ax_.fill_between(x_values_1, y_values_1, color = segments[i].GetColor(), alpha=0.2)
-            ax_.fill_between(x_values_2, y_values_2, color = segments[i+1].GetColor(), alpha=0.2)
-            ax_.set_ylim( min_y, max_y)
-            ax_.set_xlim( min_x, max_x)
-            ax_.axvline(all_x[inters_x[i]], color = "red")
-            txt_x = str(round(all_x[inters_x[i]]/1000, 2))          # X coord (text for the title)
-            txt = "[#" + str(i+1) + "] (" + txt_x + " km)"   # ALL the text
-            ax_.set_title(txt)
-            ax.append(ax_)
-        
-        plt.show()
+    def SavePlotAs(self, plot, fileName, transparent = True):
+        """ Saves the Plot in a PNG image """
+        plot.savefig(fileName)
