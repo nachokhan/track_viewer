@@ -29,7 +29,6 @@ class TrackFileReader:
         lines = f.readlines()
         for line in lines:
             self.analyzeLine(line)
-
         f.close()
 
     # Analyzes a line in order to extract a gps point or a "start of segment"
