@@ -1,178 +1,133 @@
-""" TrackViewer Module
+""" 
+TrackViewer Module
 This module manages all the needed functions to plot the
-Track info saved in the data files.
+Track info saved in the data files readen by TrackReader
 
-This data files are TXT in the form indicated by the
-GPS Visualizer (https://www.gpsvisualizer.com/)
-
-Info about the format is available under:
-https://www.gpsvisualizer.com/tutorials/tracks.html
 """
 
-from math import sin, cos, sqrt, atan2, radians
+import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
+import math
+import TrackReader
 
-#########
-# TrackFile Class represents an object that reads a text file with gps
-# segments and saves this data as a List Of Segments.
-#########
-class TrackFile:
+class TrackViewer:
 
-    def __init__ (self):
-        self.__segment = Segment()
-        self.__track = Track()
+    def BluidPlot(self, track, max_cols = 0, intersection_window = 50):
 
-    # Reads a text File by analizing and saving all the segments in the file    
-    def ReadFile(self, fileName):
-        """ Reads a TXT File with Segments and stores them """
-        f = open(fileName, "r")
-        lines = f.readlines()
-        for line in lines:
-            self.analyzeLine(line)
+        segments = track.GetSegments()
 
-        f.close()
+        intersections = len(segments) - 1
 
-    # Analyzes a line in order to extract a gps point or a "start of segment"
-    def analyzeLine(self, line):
-        first_element = line.split(",")[0]
+        if max_cols == 0:
+            if intersections <= 5:
+                max_cols = intersections
+            else:
+                max_cols = 4
 
-        if first_element == 'T':
-            point, name, color = self.GetValuesFromLine(line)
-            self.__segment.AddPoint(point)
-            self.__segment.SetColor(color)
-            self.__segment.SetName(name)
+        # How many rows do we need to show N intersections
+        max_rows = math.ceil (intersections / max_cols) + 1
 
-        elif first_element == 'type' :
-            self.__segment = Segment()          
-            self.__track.AddSegment(self.__segment)           
+        dist_acc = 0    #Accumulated distance over all segments
+            
+        inters_x = []   # indexes where the segmentatios are
+        all_x = []      # all X data from first point to last one
+        all_y = []   
+
+        x_segments = []     # Array with X values of each segment
+        y_segments = []
+        c_segments = []     # Array of color segments
+
+        for segment in segments:
+
+            x = []  # x must be calculated from gps points
+            y = []
+            color = segment.GetColor()
+            points = segment.GetPoints()
+            cant_points = len(points)-1
+
+            # calculate distance for points (0-->1), (1-->2) ... (N-1-->N)
+            for i in range(cant_points):         
+                y.append(points[i].Elevation)                
+                x.append(dist_acc)
+                all_y.append(points[i].Elevation)
+                all_x.append(dist_acc)
+                dist_acc += points[i].DistanceTo(points[i+1])
+            
+            # last points are not contempled in first "for loop" we add them here        
+            y.append(points[i+1].Elevation)
+            x.append(dist_acc)
+            all_y.append(points[i+1].Elevation)
+            all_x.append(dist_acc)
+            inters_x.append(len(all_x)-1)           
+
+            x_segments.append(x)
+            y_segments.append(y)
+            c_segments.append(color)
         
-    # Read the lines and obtain the values
-    def GetValuesFromLine(self, line):
-        values = line.split(",")
-        p = GPSPoint(values[1],values[2],values[3])
-        name = values[4]
-        color = values[5][:-1]
-        return (p, name, color)
+        y_max = max(all_y)
+        y_min = min(all_y)
 
 
-    # Returns all the segments in the file.
-    def GetTrack(self):
-        """ Returns the Track readed fro mthe file """
-        return self.__track
+        #########################################################################################################################
+        # GRAPHICATION PART
+
+        # Initiliaze graphics
+        fig = plt.figure(figsize=(25, 15))
+        fig.suptitle("Elevation Map Analysis")
+        grid = plt.GridSpec(max_rows, max_cols, wspace=0.2, hspace=0.8)    
+
+        # DRAW MAIN ELEVATION MAP
+        main_ax = fig.add_subplot(grid[0, 0:])    # first row reserved for total elevation
+
+        for i in range (0, len(x_segments)):        
+            main_ax.fill_between(x_segments[i], y_segments[i], color = c_segments[i], alpha = 0.5)  # Should Move this to GRAPH PART
+
+        main_ax.set_title("Elevation Map")
+        main_ax.set_xlabel("Distance (Km)")
+        main_ax.set_ylabel("Elevation(m)")
+        main_ax.set_ylim(y_min-10, y_max+60)
+        # Scale m into Km and add the last X value as a text (to avoid possible overlapping)
+        x_scale = 1/1000
+        ticks_x = ticker.FuncFormatter(lambda x, pos: '{0:g}'.format(x*x_scale))
+        main_ax.xaxis.set_major_formatter(ticks_x)
+        main_ax.annotate(str( round(all_x[-1]*x_scale,2)), (all_x[-1], all_y[-1]))
+        
+        
+        # SCATTER PART
+        for i in inters_x:
+            int_x = all_x[i]
+            int_y = all_y[i]
+            main_ax.scatter(int_x, int_y, color = "black", edgecolor="white", marker = '^')            
 
 
-#########
-# GPS Point represents a GPS point data.
-#########
-class GPSPoint:
-    def __init__(self, lat, lon, elev):
-        self.Latitude = float(lat)
-        self.Longitude = float(lon)
-        self.Elevation = float(elev)
+        # DRAW EACH INTERSECTION
+        ax = []
+        for i in range(0, intersections):        
+            row = math.floor(i/max_cols) + 1
+            col = i % max_cols
 
-    def DistanceTo(self, point):
-        delta_x = self.h_distance_to(point)
-        delta_y = abs(self.Elevation - point.Elevation)        
-        d = sqrt( delta_x**2 + delta_y**2)        
-        return d
-    
-    def h_distance_to(self, p2):
-        R = 6373.0
-        lat1, lon1 = radians(self.Latitude), radians(self.Longitude)
-        lat2, lon2 = radians(p2.Latitude), radians(p2.Longitude)
-        dlon = lon2 - lon1
-        dlat = lat2 - lat1
-        a = (sin(dlat/2))**2 + cos(lat1) * cos(lat2) * (sin(dlon/2))**2
-        c = 2 * atan2(sqrt(a), sqrt(1-a))
-        distance = R * c * 1000
-        return distance
-
-
-#########
-# Segments represents a collection of GPS Points that were defined
-# as a Segment, that means, a part of whole route.
-#########
-class Segment:
-    def __init__(self):
-        self.__points = []
-        self.__color = "red"
-        self.__name = "noname"
-   
-    def AddPoint(self, point):
-        """ Adds a new GPS point to the segment """
-        self.__points.append(point)
-
-    def SetColor(self, color):
-        """ Sets the color to plot the segment """
-        self.__color = color
-    
-    def GetColor(self):
-        """ Returns the color to plot the segment """
-        return self.__color
-
-    def GetSlope(self):
-        """ Returns the slope of the whole segment """
-        return 0 # todo
-
-    def SetName(self, name):
-        """ Sets the name of the segment """
-        self.__name = name
-
-    def GetName(self):
-        """ Returns the name of the segment """
-        return self.__name
-
-    def GetPoints(self):
-        """ Return a list of points """
-        return self.__points
-
-    def GetLength(self):
-        """ Returns the lenght of the whole segment in meters """      
-        d = 0
-        points_range = len(self.__points)-1
-        for i in range (points_range):
-            d += self.__points[i].DistanceTo(self.__points[i+1])
-            self.__distance__ = d
-        return self.__distance__
-
-    def GetElevationExtremes(self):
-        """ Returns the maximum and the minimum elevations of the segment"""
-        max = min = self.__points[0].Elevation
-        for p in self.__points:
-            if p.Elevation > max: max = p.Elevation
-            if p.Elevation < min: min = p.Elevation
-
-        return (min, max)
-
-
-#########
-# Track represents a collection of Segments (ideally correlatives segments)
-#########
-class Track:
-    def __init__(self):
-        self.__segments = []
-    
-    def AddSegment(self, segment):
-        """ Add a new segment to the track """
-        self.__segments.append(segment)
-    
-    def GetLength(self):
-        """ Returns the length of the whole Track """
-        d = 0
-        for segment in self.__segments:
-            d += segment.GetLength()
-        return d
-
-    def GetSegments(self):
-        """ Returns all the segments in the track """
-        return self.__segments
-
-    def GetElevationExtremes(self):
-        """ Returns the maximum and the minimum elevations of the track"""
-        min, max = self.__segments[0].GetElevationExtremes()
-        for s in self.__segments:
-            m, M = s.GetElevationExtremes()
-            if M > max: max = M
-            if m < min: min = m
-
-        return (min, max)
-
+            # Select the intervals & values around the segment's intersection
+            m_l = inters_x[i]-intersection_window       # middle to left
+            m_r = inters_x[i]+intersection_window       # middle to right
+            x_values_1 = all_x[m_l:inters_x[i]+1]
+            y_values_1 = all_y[m_l:inters_x[i]+1]
+            x_values_2 = all_x[inters_x[i]:m_r]
+            y_values_2 = all_y[inters_x[i]:m_r]
+            # Calculate min and max
+            min_x = min ( min(x_values_1), min (x_values_2))
+            min_y = min ( min(y_values_1), min (y_values_2))
+            max_x = max ( max(x_values_1), max (x_values_2))
+            max_y = max ( max(y_values_1), max (y_values_2))
+            # Plot everything
+            ax_ = fig.add_subplot(grid[row, col], ylim = 1000)
+            ax_.fill_between(x_values_1, y_values_1, color = segments[i].GetColor(), alpha=0.2)
+            ax_.fill_between(x_values_2, y_values_2, color = segments[i+1].GetColor(), alpha=0.2)
+            ax_.set_ylim( min_y, max_y)
+            ax_.set_xlim( min_x, max_x)
+            ax_.axvline(all_x[inters_x[i]], color = "red")
+            txt_x = str(round(all_x[inters_x[i]]/1000, 2))          # X coord (text for the title)
+            txt = "[#" + str(i+1) + "] (" + txt_x + " km)"   # ALL the text
+            ax_.set_title(txt)
+            ax.append(ax_)
+        
+        plt.show()
