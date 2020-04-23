@@ -20,6 +20,8 @@ class TrackPlotInfo:
         self.__all_x_data = []
         self.__all_y_data = []
         self.__intersections = []
+        self.__lat_segs = []
+        self.__lon_segs = []
 
     def SetTrack(self, track):
         self.__track = track
@@ -51,16 +53,23 @@ class TrackPlotInfo:
         y_segments = []
         c_segments = []     # Array of color segments
 
+        lat_segments = []   # Array of segment's latitudes
+        lon_segments = []
+
         for segment in segments:
 
-            x = []  # x must be calculated from gps points
-            y = []
+            lats=[]     # segment latitude's points
+            lons=[]     
+            x = []      # segment distances (must be calculated from gps points)
+            y = []      # segment elevations
             color = segment.GetColor()
             points = segment.GetPoints()
             cant_points = len(points)-1
 
             # calculate distance for points (0-->1), (1-->2) ... (N-1-->N)
-            for i in range(cant_points):         
+            for i in range(cant_points):
+                lats.append(points[i].Latitude)
+                lons.append(points[i].Longitude)
                 y.append(points[i].Elevation)                
                 x.append(dist_acc)
                 all_y.append(points[i].Elevation)
@@ -72,11 +81,16 @@ class TrackPlotInfo:
             x.append(dist_acc)
             all_y.append(points[i+1].Elevation)
             all_x.append(dist_acc)
-            inters_x.append(len(all_x)-1)           
+            inters_x.append(len(all_x)-1)
+            lats.append(points[i+1].Latitude)
+            lons.append(points[i+1].Longitude)
 
             x_segments.append(x)
             y_segments.append(y)
             c_segments.append(color)
+            lat_segments.append(lats)
+            lon_segments.append(lons)
+            
 
 
         # NOTE: In the whole method I worked with standalone variables instead of 
@@ -90,6 +104,8 @@ class TrackPlotInfo:
         self.__all_x_data = all_x
         self.__all_y_data = all_y
         self.__intersections = inters_x
+        self.__lat_segs = lat_segments
+        self.__lon_segs = lon_segments
         
 
 
@@ -97,8 +113,7 @@ class TrackViewer:
 
 
     def BuildPlot(self, plotInfo, max_cols = 0, intersection_window = 50):
-        """ Given a TrackPlotInfo object, build the XXXXX Information Page. """      
-
+        """Given a TrackPlotInfo object, build the XXXXX Information Page."""
         x_segments,  y_segments, c_segments = plotInfo.GetSegmentsData()
         inters_x = plotInfo.GetIntersectionsList()
         all_x , all_y = plotInfo.GetAllPoints()
@@ -139,7 +154,7 @@ class TrackViewer:
         main_ax.annotate(str( round(all_x[-1]*x_scale,2)), (all_x[-1], all_y[-1]))
         
         
-        # SCATTER POINTS
+        # SCATTER POINTS        
         for i in inters_x:
             int_x = all_x[i]
             int_y = all_y[i]
@@ -184,7 +199,7 @@ class TrackViewer:
         plot.show()
 
     def SavePlotAs(self, plot, fileName, transparent = True):
-        """ Saves the Plot in a PNG image """
+        """Saves a plot into a PNG file """
         plot.savefig(fileName)
 
 
