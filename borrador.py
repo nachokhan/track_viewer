@@ -3,6 +3,11 @@ from TrackViewer import TrackViewer, TrackPlotInfo
 from matplotlib import pylab as plt
 import math
 
+"""
+A little information
+https://docs.microsoft.com/en-us/azure/azure-maps/zoom-levels-and-tile-grid?tabs=csharp
+
+"""
 
 def OpenStreetMap():
     reader = TrackFileReader()
