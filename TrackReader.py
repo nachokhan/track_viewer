@@ -150,6 +150,10 @@ class Segment:
 class Track:
     def __init__(self):
         self.__segments = []
+        self.__northest_point = None
+        self.__southest_point = None
+        self.__westest_point = None
+        self.__eastest_point = None
     
     def AddSegment(self, segment):
         """ Add a new segment to the track """
@@ -165,6 +169,37 @@ class Track:
     def GetSegments(self):
         """ Returns all the segments in the track """
         return self.__segments
+
+    def GetBoundaries(self):
+        """ Return Boundary Box as tuple (MinLon, MaxLon, MinLat, MaxLat) """
+        minLon = self.__westest_point[0]
+        maxLon = self.__eastest_point[0]
+        minLat = self.__southest_point[1]
+        maxLat = self.__northest_point[1]
+        return (minLon, maxLon, minLat, maxLat)
+
+    def GetExtremPoint(self, direction):
+
+        if not self.__northest_point:
+            self.__calcExtremPoints()
+        
+        if direction.lower() == "n": return self.__northest_point
+        elif direction.lower() == "s": return self.__southest_point
+        elif direction.lower() == "w": return self.__westest_point
+        elif direction.lower() == "e": return self.__eastest_point
+
+    def __calcExtremPoints(self):
+        """ Calculate Extrem points thourgh all points """
+        points=[]
+        for s in self.__segments:
+            for p in s.GetPoints():
+                points.append( (p.Latitude, p.Longitude ))
+
+        self.__northest_point = max(points,key=lambda item:item[1])
+        self.__southest_point = min(points,key=lambda item:item[1])
+        self.__westest_point = max(points,key=lambda item:item[0])
+        self.__eastest_point = min(points,key=lambda item:item[0])
+
 
     def GetElevationExtremes(self):
         """ Returns the maximum and the minimum elevations of the track"""
