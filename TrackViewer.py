@@ -50,20 +50,18 @@ class TrackPlotInfo:
         if not self.__track:
             raise NoTrackException("Track is null", "There is no track assigned to the instance. Maybe you forgot to call the constructor with a track or to call SetTrack Method")
 
-        segments = self.__track.GetSegments()
-
-        dist_acc = 0    #Accumulated distance over all segments
+        segments = self.__track.GetSegments()       
             
         inters_x = []   # indexes indicating where each segmentatios is
         all_x = []      # all X data from first point to last one
-        all_y = []   
-
+        all_y = []
         x_segments = []     # Array with X values of each segment
         y_segments = []
         c_segments = []     # Array of color segments
-
         lat_segments = []   # Array of segment's latitudes
         lon_segments = []
+
+        dist_acc = 0    #Accumulated distance over all segments
 
         for segment in segments:
 
