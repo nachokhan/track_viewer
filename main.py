@@ -10,7 +10,8 @@ def Hacer(fileName):
     reader.ReadFile(fileName)
     track = reader.GetTrack()
 
-    imageName = fileName[:-3] + "png"
+    index = len(fileName)-fileName.find(".")-1
+    imageName = fileName[:-index] + "png"
 
     title = Path(fileName).stem
 
@@ -22,5 +23,4 @@ def Hacer(fileName):
     viewer.ShowPlot(plot1)
 
 
-
-Hacer("./data/rincon1.txt")
+#Hacer("./data/rincon1.txt")
