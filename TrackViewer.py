@@ -118,12 +118,13 @@ class TrackPlotInfo:
 
 class TrackViewer:
 
-
     def BuildPlot(self, plotInfo, max_cols = 0, intersection_window = 50):
         """Given a TrackPlotInfo object, build the XXXXX Information Page."""
+
         x_segments,  y_segments, c_segments = plotInfo.GetSegmentsData()
         inters_x = plotInfo.GetIntersectionsList()
         all_x , all_y = plotInfo.GetAllPoints()
+        title = plotInfo.GetName()
 
         intersections = len(inters_x) - 1
 
@@ -141,7 +142,7 @@ class TrackViewer:
 
         # Initiliaze graphics
         fig = plt.figure(figsize=(25, 15))
-        fig.suptitle("Elevation Map Analysis")
+        fig.suptitle(title, size="xx-large")
         grid = plt.GridSpec(max_rows, max_cols, wspace=0.2, hspace=0.8)    
 
         # DRAW MAIN ELEVATION MAP
@@ -198,6 +199,7 @@ class TrackViewer:
             ax_.set_title(txt)
             ax.append(ax_)
         
+        plt.title(title)
         return plt
 
 
