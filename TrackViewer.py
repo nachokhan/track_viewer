@@ -12,7 +12,7 @@ import TrackReader
 
 class TrackPlotInfo:
 
-    def __init__(self, track = None):
+    def __init__(self, track = None, name = None):
         self.__track = track
         self.__x_segs = []
         self.__y_segs = []
@@ -22,11 +22,16 @@ class TrackPlotInfo:
         self.__intersections = []
         self.__lat_segs = []
         self.__lon_segs = []
+        self.__name = name
 
     def SetTrack(self, track):
         self.__track = track
 
+    def GetName(self):
+        return self.__name
+
     def GetSegmentsData(self):
+        """ Returns a tuple with segment's array containing X[], Y[] and color for each segment """
         return (self.__x_segs, self.__y_segs, self.__c_segs)
     
     def GetAllPoints(self):
