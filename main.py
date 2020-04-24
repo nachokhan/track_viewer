@@ -1,8 +1,8 @@
 from TrackReader import TrackFileReader, Track
 from TrackViewer import TrackViewer, TrackPlotInfo
-from matplotlib import pylab as plt
-import math
 from pathlib import Path
+import sys
+
 
 def Hacer(fileName):
     
@@ -18,8 +18,9 @@ def Hacer(fileName):
     pInfo.ExtractTrackData()
 
     viewer = TrackViewer()    
-    plot1 = viewer.BuildPlot(pInfo)
+    plot1 = viewer.BuildPlot(pInfo, intersection_window=40)
     viewer.ShowPlot(plot1)
+
 
 
 Hacer("./data/rincon1.txt")
