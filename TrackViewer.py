@@ -35,6 +35,10 @@ class TrackPlotInfo:
     def GetIntersectionsList(self):
         return self.__intersections
 
+    def GetLatLonSegments(self):
+        """ Returns a tuple with segment's array containing Lons[], Lats[] for each segment"""
+        return (self.__lon_segs, self.__lat_segs)
+
     def ExtractTrackData(self):
         """ Given a Track, examine and extract all the needed information for plotting """
 
