@@ -18,7 +18,8 @@ def Plotear(fileName):
     reader.ReadFile(fileName)
     track = reader.GetTrack()
 
-    imageName = fileName[:-3] + "png"
+    index = len(fileName)-fileName.find(".")-1
+    imageName = fileName[:-index] + "png"
 
     title = Path(fileName).stem
 
@@ -32,27 +33,48 @@ def Plotear(fileName):
 
 def main():
         
-    if len(sys.argv) == 1:
-        print("Use with list of txt file to parse: E.g.: python plottxt.py file1.txt file2.txt file3.txt")
-
     fileToParse = sys.argv[1:]
+    nuevaLista = fileToParse
 
-    finalList = CheckFileList(fileToParse)
+    nuevaLista = CheckArgs(fileToParse)
+    finalList = CheckFileList(nuevaLista)
     
+
     for f in finalList:
         print ("Plotting file '", f, "' ...........", end= " ")
         Plotear(f)
         print ("Done!")
 
-    
 
+
+def CheckArgs(fileToParse):
+    """ Check the Argv list to perfmorm different actions """
+    nuevaLista = []
+
+    # If no parameter is used: show error + example
+    if len(fileToParse) == 0:
+        print("Use with list of txt file to parse:\nI.e. 1: python plottxt.py file1.txt file2.txt file3.txt\nI.e. 2: python plottxt.py *")
+
+    # If given an "*": examine all files in the folder
+    if len(fileToParse) == 1 and fileToParse[0].endswith("*"):
+        direct = Path(fileToParse[0][:-1])
+        nuevaLista = []
+        for elem in direct.iterdir():
+            file = Path(elem)
+            if file.is_file():
+                nuevaLista.append(file.name)
+
+        print ("\n\n\n")
+        print (nuevaLista)
+    return nuevaLista
 
 def CheckFileList(fileToParse):
+    """ Removes those files that don't exists in the list """
     finalList = list(fileToParse)
 
     for f in fileToParse:
         file = Path(f)
-        if not file.exists():
+        if not file.exists() or not file.is_file():
             print ("File ", f, "not found or is not a file. Removed from list")
             finalList.remove(f)
 
