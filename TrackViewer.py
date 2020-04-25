@@ -176,12 +176,17 @@ class TrackViewer:
             col = i % max_cols
 
             # Select the intervals & values around the segment's intersection
-            m_l = inters_x[i]-intersection_window       # middle to left
-            m_r = inters_x[i]+intersection_window       # middle to right
-            x_values_1 = all_x[m_l:inters_x[i]+1]
-            y_values_1 = all_y[m_l:inters_x[i]+1]
-            x_values_2 = all_x[inters_x[i]:m_r]
-            y_values_2 = all_y[inters_x[i]:m_r]
+            inters_p = inters_x[i]                  # current distance of intersection
+            if inters_p < intersection_window:
+                m_l = 0                                 # zero to middle
+            else:
+                m_l = inters_p-intersection_window      # middle to left 
+            m_r = inters_p+intersection_window          # middle to right
+
+            x_values_1 = all_x[m_l:inters_p+1]
+            y_values_1 = all_y[m_l:inters_p+1]
+            x_values_2 = all_x[inters_p:m_r]
+            y_values_2 = all_y[inters_p:m_r]
             # Calculate min and max
             min_x = min ( min(x_values_1), min (x_values_2))
             min_y = min ( min(y_values_1), min (y_values_2))
@@ -193,8 +198,8 @@ class TrackViewer:
             ax_.fill_between(x_values_2, y_values_2, color = c_segments[i+1], alpha=0.2)
             ax_.set_ylim( min_y, max_y)
             ax_.set_xlim( min_x, max_x)
-            ax_.axvline(all_x[inters_x[i]], color = "red")
-            txt_x = str(round(all_x[inters_x[i]]/1000, 2))      # X coord (for the title) rounded in Km
+            ax_.axvline(all_x[inters_p], color = "red")
+            txt_x = str(round(all_x[inters_p]/1000, 2))      # X coord (for the title) rounded in Km
             txt = "[#" + str(i+1) + "] (" + txt_x + " km)"      # ALL the text
             ax_.set_title(txt)
             ax.append(ax_)
