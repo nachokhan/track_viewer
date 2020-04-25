@@ -2,13 +2,13 @@
 TrackViewer Module
 This module manages all the needed functions to plot the
 Track info saved in the data files readen by TrackReader
-
 """
 
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import math
 import TrackReader
+import TrackDataModel
 
 class TrackPlotInfo:
 
