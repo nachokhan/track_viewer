@@ -18,7 +18,7 @@ def Plotear(fileName):
     reader.ReadFile(fileName)
     track = reader.GetTrack()
 
-    index = len(fileName)-fileName.find(".")-1
+    index = len(fileName)-fileName.rfind(".")-1
     imageName = fileName[:-index] + "png"
 
     title = Path(fileName).stem
@@ -27,18 +27,20 @@ def Plotear(fileName):
     pInfo.ExtractTrackData()
 
     viewer = TrackViewer()    
-    plot1 = viewer.BuildPlot(pInfo, intersection_window=40)
+    plot1 = viewer.BuildPlot(pInfo, intersection_window=20)
     viewer.SavePlotAs(plot1, imageName)
 
+    plot1.close()
 
-def main():
-        
-    fileToParse = sys.argv[1:]
-    nuevaLista = fileToParse
 
+def main(fileToParse):
     nuevaLista = CheckArgs(fileToParse)
+    print("\n".join(nuevaLista))
+
     finalList = CheckFileList(nuevaLista)
     
+    print ('\nFiles to plot:')
+    print("\n".join(finalList))
 
     for f in finalList:
         print ("Plotting file '", f, "' ...........", end= " ")
@@ -47,7 +49,7 @@ def main():
 
 
 
-def CheckArgs(fileToParse):
+def  CheckArgs(fileToParse):
     """ Check the Argv list to perfmorm different actions """
     nuevaLista = []
 
@@ -56,16 +58,17 @@ def CheckArgs(fileToParse):
         print("Use with list of txt file to parse:\nI.e. 1: python plottxt.py file1.txt file2.txt file3.txt\nI.e. 2: python plottxt.py *")
 
     # If given an "*": examine all files in the folder
-    if len(fileToParse) == 1 and fileToParse[0].endswith("*"):
+    elif len(fileToParse) == 1 and fileToParse[0].endswith("*"):
         direct = Path(fileToParse[0][:-1])
         nuevaLista = []
         for elem in direct.iterdir():
             file = Path(elem)
             if file.is_file():
-                nuevaLista.append(file.name)
-
-        print ("\n\n\n")
-        print (nuevaLista)
+                nuevaLista.append(str (file.absolute()))
+    
+    else:
+        nuevaLista = fileToParse
+     
     return nuevaLista
 
 def CheckFileList(fileToParse):
@@ -76,10 +79,7 @@ def CheckFileList(fileToParse):
         file = Path(f)
         if not file.exists() or not file.is_file():
             print ("File ", f, "not found or is not a file. Removed from list")
-            finalList.remove(f)
-
-    print ('\nFiles to plot:', finalList)
-
+            finalList.remove(f)    
     return finalList
 
 if __name__ == "__main__":

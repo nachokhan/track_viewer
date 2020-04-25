@@ -23,4 +23,15 @@ def Hacer(fileName):
     viewer.ShowPlot(plot1)
 
 
-#Hacer("./data/rincon1.txt")
+
+import plottxt
+
+if __name__ == "__main__":
+    sys.argv.append("../track_analyzer/other/output/rincon2___/10/VIEW_05_03_250.txt")
+
+    lista = sys.argv[1:]
+
+    print ("\nCHUPALA:\t")
+    print("\n".join(lista))
+
+    plottxt.main(lista)
