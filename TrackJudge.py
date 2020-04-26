@@ -5,10 +5,10 @@ emit a value of difficulty for a segment or a track.
 
 Different variables to consider are:
     - Distance
-    - Elevation Height
+    - Elevation
     - Accumulated Elevation
     - Slope
-    - Elevation above the see level.
+    - Altitude (masl)
     - Curves
 
 Other variable to consider, but difficult to mess are:
@@ -18,9 +18,9 @@ Other variable to consider, but difficult to mess are:
     - Etc.
 """
 
-
-
 def CalcSegmentDifficulty(segment):
     return None
 
+def CalcTrackDifficulty(track):
+    return None
 
