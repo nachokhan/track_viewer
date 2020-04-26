@@ -74,3 +74,29 @@ class Segment:
             if p.Elevation < min: min = p.Elevation
 
         return (min, max)
+
+    def GetAccElevation(self):
+        """ Returns the accumulated ascending elevation of the segment """
+        acc = 0
+        q_points = len(self.__points)-1
+        for i in range (0, q_points):
+            p1 = self.__points[i]
+            p2 = self.__points[i+1]
+            diff = p2.Elevation - p1.Elevation
+
+            if diff > 0:
+                acc += diff
+        return  acc
+
+    def GetAccDescent(self):
+        """ Returns the accumulated descending elevation of the segment """
+        acc = 0
+        q_points = len(self.__points)-1
+        for i in range (0, q_points):
+            p1 = self.__points[i]
+            p2 = self.__points[i+1]
+            diff = p2.Elevation - p1.Elevation
+
+            if diff < 0:
+                acc += diff
+        return  acc

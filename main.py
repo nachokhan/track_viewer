@@ -3,7 +3,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import sys
 
-
+from trackdatamodel.Segment import Segment
 import plottxt
 import TrackJudge
 
@@ -73,16 +73,28 @@ def f_index_generico():
 
 def indexes():
     reader = TrackFileReader()
-    reader.ReadFile("./data/arco_up.txt")
+    reader.ReadFile("./data/rocas1.txt")
 
     track = reader.GetTrack()    
 
     segments = track.GetSegments()
 
+    dis = 0
+    acc = 0
+    acc2 = 0
     for seg in segments:
-        points = seg.GetPoints()
+        print("SEGMENTO")
+        print ("\tDist ->: ", round(seg.GetLength(),2), "m")
+        print ("\tAcc+ ->: ", round(seg.GetAccElevation(),2), "m")
+        print ("\tAcc- ->: ", round(seg.GetAccDescent(),2), "m")        
+        dis += seg.GetLength()
+        acc += seg.GetAccElevation()
+        acc2 += seg.GetAccDescent()
 
-
+    print ("\nTOTAL:")
+    print ("\tDist ->: ", round(dis,2), "m")
+    print ("\tAcc+ ->: ", round(acc,2), "m")
+    print ("\tAcc- ->: ", round(acc2,2), "m")
 
     print ("HOLA")
 
