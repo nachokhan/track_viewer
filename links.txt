@@ -1,0 +1,14 @@
+
+Uphills Climbing Related
+------------------------
+
+http://www.climbindex.eu (BTP codigo en C++ para generar rutas basado
+en OSM z SGEM o DEM de la NASA. Pinta bueno)
+
+https://www.climbbybike.com/climb_difficulty.asp (FIETS index y el
+ClimbByBike index).
+
+
+
+
+
