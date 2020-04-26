@@ -204,7 +204,6 @@ class TrackViewer:
             ax_.set_title(txt)
             ax.append(ax_)
         
-        plt.title(title)
         return plt
 
 
