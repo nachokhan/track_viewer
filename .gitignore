@@ -5,3 +5,4 @@ __pycache__/*.pyc
 .vscode/launch.json
 data/*
 data/rincon1.txt
+*.pyc

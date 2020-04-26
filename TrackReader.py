@@ -10,8 +10,9 @@ Info about the format is available under:
 https://www.gpsvisualizer.com/tutorials/tracks.html
 """
 
-from math import sin, cos, sqrt, atan2, radians
-from TrackDataModel import Segment, GPSPoint, Track
+from trackdatamodel.GPSPoint import GPSPoint
+from trackdatamodel.Segment import Segment
+from trackdatamodel.Track import Track
 
 #########
 # TrackFileReader Class represents an object that reads a text file 

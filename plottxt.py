@@ -7,7 +7,7 @@ the respective PNG file.
 """
 
 from TrackReader import TrackFileReader
-from TrackDataModel import Track
+from trackdatamodel import Track
 from TrackViewer import TrackViewer, TrackPlotInfo
 from pathlib import Path
 import sys

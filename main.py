@@ -1,6 +1,4 @@
 from TrackReader import TrackFileReader
-from TrackDataModel import Track, Segment, GPSPoint
-from TrackViewer import TrackViewer, TrackPlotInfo
 from pathlib import Path
 import matplotlib.pyplot as plt
 import sys
@@ -18,7 +16,6 @@ def f_plottxt():
     print("\n".join(lista))
 
     plottxt.main(lista)
-
 
 def f_index_generico():
     fig = plt.figure(figsize=(55, 25))
@@ -85,13 +82,12 @@ def indexes():
     for seg in segments:
         points = seg.GetPoints()
 
-        
 
 
-
+    print ("HOLA")
 
 
 
 if __name__ == "__main__":
-    f_index_generico()
+    indexes()
     
