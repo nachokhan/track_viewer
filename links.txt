@@ -9,6 +9,26 @@ https://www.climbbybike.com/climb_difficulty.asp (FIETS index y el
 ClimbByBike index).
 
 
+Route Diffficulty Related
+-------------------------
+
+http://theclimbingcyclist.com/gradients-and-cycling-an-introduction/ 
+Es la parte 1. Abajo tiene una pequeña clasificación de pendientes y su dificultad.
+
+http://theclimbingcyclist.com/gradients-and-cycling-how-much-harder-are-steeper-climbs/
+Es la parte 2. Habla de Potencia y otros factores para calculos.
+
+
+
+Tiempo y Planificación Related
+------------------------------
+
+https://en.wikipedia.org/wiki/Naismith%27s_rule 
+Formula para calcular el tiempo que una ruta te puede llevar si vas a paturra.
+Tambien est¡a la Talbot Time que calcula el tiempo que te lleva hacer una carrera
+(a pata) en tu casa (horizontal) si la carrerta virtual incluye subidas y bajadas
+
+
 
 
 
