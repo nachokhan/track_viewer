@@ -15,6 +15,8 @@ Main Public methods are:
 """
 from math import sin, cos, sqrt, atan2, radians
 
+from geographiclib.geodesic import Geodesic
+
 class GPSPoint:
     def __init__(self, lat, lon, elev):
         self.Latitude = float(lat)
@@ -26,6 +28,19 @@ class GPSPoint:
         delta_y = abs(self.Elevation - point.Elevation)        
         d = sqrt( delta_x**2 + delta_y**2)        
         return d
+
+    def BearingWith(self, point):
+        """ Return bearing between self and another point """
+        lat1 = self.Latitude
+        lat2 = point.Latitude
+        lon1 = self.Longitude
+        lon2 = point.Longitude
+
+        Geodesic.WGS84
+
+        bearing = Geodesic.WGS84.Inverse(lat1, lon1, lat2, lon2)['azi1']
+        return bearing
+
     
     def h_distance_to(self, p2):
         R = 6373.0
@@ -37,3 +52,5 @@ class GPSPoint:
         c = 2 * atan2(sqrt(a), sqrt(1-a))
         distance = R * c * 1000
         return distance
+
+    
