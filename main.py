@@ -71,9 +71,9 @@ def f_index_generico():
 
     plt.show()
 
-def indexes():
+def f_showAcc():
     reader = TrackFileReader()
-    reader.ReadFile("./data/rocas1.txt")
+    reader.ReadFile("./data/rincon1.txt")
 
     track = reader.GetTrack()    
 
@@ -82,24 +82,65 @@ def indexes():
     dis = 0
     acc = 0
     acc2 = 0
+    curv=0
+
+    fig = plt.figure(figsize=(55, 25))
+    fig.suptitle("CURVES", size="xx-large")
+    grid = plt.GridSpec(1, 1, wspace=0.5, hspace=0.5)
+    ax1 = fig.add_subplot(grid[0, 0])
+
     for seg in segments:
+       
+        curvis, puntis = seg.GetCurves(min_degree=40)
+
+        puntos = seg.GetPoints()
+
+        eje_x = [( i.Longitude  ) for i in seg.GetPoints()]
+        eje_y = [( i.Latitude  ) for i in seg.GetPoints()]
+        ax1.plot(eje_x, eje_y, color = "blue")
+        eje_x2 = []
+        eje_y2 = []
+
+        for i in puntis:
+            eje_x2.append( puntos[i].Longitude)
+            eje_y2.append( puntos[i].Latitude)
+        
+        eje_x3 = []
+        eje_y3 = []
+        t=0
+        for i in range(0, len(puntis)-2, 3):
+            i1,i2,i3 = puntis[i], puntis[i+1], puntis[i+2]
+            eje_x3.append( (puntos[i1].Longitude, puntos[i2].Longitude,  puntos[i3].Longitude) )
+            eje_y3.append( (puntos[i1].Latitude, puntos[i2].Latitude,  puntos[i3].Latitude) )
+            ax1.plot(eje_x3[t], eje_y3[t], color = "red")
+            t=t+1
+
+
         print("SEGMENTO")
         print ("\tDist ->: ", round(seg.GetLength(),2), "m")
         print ("\tAcc+ ->: ", round(seg.GetAccElevation(),2), "m")
-        print ("\tAcc- ->: ", round(seg.GetAccDescent(),2), "m")        
+        print ("\tAcc- ->: ", round(seg.GetAccDescent(),2), "m")
+        print ("\tCurv ->: ", curvis, " curves")
         dis += seg.GetLength()
         acc += seg.GetAccElevation()
         acc2 += seg.GetAccDescent()
+        curv += curvis
+        
+        ax1.scatter(eje_x, eje_y, color = "green")
+        ax1.scatter(eje_x2, eje_y2, color = "red")
+        plt.show()
+        
+
 
     print ("\nTOTAL:")
     print ("\tDist ->: ", round(dis,2), "m")
     print ("\tAcc+ ->: ", round(acc,2), "m")
     print ("\tAcc- ->: ", round(acc2,2), "m")
+    print ("\tCurv ->: ", curv, " curves")
 
     print ("HOLA")
 
 
-
 if __name__ == "__main__":
-    indexes()
+    f_showAcc()
     
