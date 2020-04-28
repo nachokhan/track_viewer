@@ -13,7 +13,7 @@ Main Public methods are:
     
 
 """
-from math import sin, cos, sqrt, atan2, radians
+from math import sin, cos, sqrt, atan2, radians, degrees, atan
 
 from geographiclib.geodesic import Geodesic
 
@@ -36,11 +36,26 @@ class GPSPoint:
         lon1 = self.Longitude
         lon2 = point.Longitude
 
-        Geodesic.WGS84
+        dx = lon2-lon1
+        dy = lat2-lat1
 
-        bearing = Geodesic.WGS84.Inverse(lat1, lon1, lat2, lon2)['azi1']
-        return bearing
+        if dx == 0:
+            if dy < 0:
+                return 180
+            else:
+                return 0
 
+        tan = dy/dx
+        
+        ang = degrees(atan(tan))
+
+        if dx < 0:
+            pepe = -90
+        else:
+            pepe = 90
+
+        return round (pepe-ang, 2)
+        
     
     def h_distance_to(self, p2):
         R = 6373.0

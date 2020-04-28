@@ -22,6 +22,7 @@ Main Public methods are:
 """
 
 from trackdatamodel.GPSPoint import GPSPoint
+from math import radians, degrees
 
 class Segment:
     def __init__(self):
@@ -100,3 +101,42 @@ class Segment:
             if diff < 0:
                 acc += diff
         return  acc
+
+    def GetCurves(self, min_degree = 80, min_p_sep=5):
+        """Return quatity of curves in the segment that have at least X dgrees
+
+        Keyword Arguments:
+            min_degree {int} -- Minimun angle to be considered "curve" (default: {80})
+            min_p_sep {int} -- Minimun separation between points to avoid noise (default: {5})
+
+        Returns:
+            curves {int} -- Quantity of curves detected
+            intensities {list} -- Degree of each curve
+            curve_points {list} -- Each index with a detected curve
+        """
+        curves = 0                      # Of cours, curves counter
+        points_with_curve = []          # Points of the middle point of each curve
+        curves_intenstities = []        # STRONGNESS of each curve (how "eng" is)
+        q_points = len(self.__points)-2
+        for i in range (0, q_points):
+            p1 = self.__points[i]
+            p2 = self.__points[i+1]
+            p3 = self.__points[i+2]
+
+            d1 = p1.DistanceTo(p2)
+            d2 = p2.DistanceTo(p3)
+
+            b1 = p1.BearingWith(p2)
+            b2 = p2.BearingWith(p3)
+
+            diff = abs(b2-b1)
+
+            if diff >= min_degree  and d1 >= min_p_sep and d2 >= min_p_sep:
+                curves += 1
+                #points_with_curve.append(i)
+                points_with_curve.append(i+1)
+                #points_with_curve.append(i+2)
+                curves_intenstities.append( round(diff, 2) ) 
+                
+
+        return curves, curves_intenstities, points_with_curve
