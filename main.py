@@ -73,7 +73,7 @@ def f_index_generico():
 
 def f_showAcc():
     reader = TrackFileReader()
-    reader.ReadFile("./data/rincon1.txt")
+    reader.ReadFile("./data/rocas1.txt")
 
     track = reader.GetTrack()    
 
@@ -82,40 +82,43 @@ def f_showAcc():
     dis = 0
     acc = 0
     acc2 = 0
-    curv=0
-
-    fig = plt.figure(figsize=(55, 25))
-    fig.suptitle("CURVES", size="xx-large")
-    grid = plt.GridSpec(1, 1, wspace=0.5, hspace=0.5)
-    ax1 = fig.add_subplot(grid[0, 0])
+    curv=0   
 
     for seg in segments:
+
+        fig = plt.figure(figsize=(55, 25))
+        fig.suptitle("CURVES", size="xx-large")
+        grid = plt.GridSpec(1, 1, wspace=0.5, hspace=0.5)
+        ax1 = fig.add_subplot(grid[0, 0])
        
-        curvis, puntis = seg.GetCurves(min_degree=40)
+        curvis, intensidad, puntis = seg.GetCurves(min_degree = 40, min_p_sep = 4)
 
         puntos = seg.GetPoints()
 
+        # Show the whole route
         eje_x = [( i.Longitude  ) for i in seg.GetPoints()]
         eje_y = [( i.Latitude  ) for i in seg.GetPoints()]
-        ax1.plot(eje_x, eje_y, color = "blue")
+        ax1.plot(eje_x, eje_y, color = "blue")        
         eje_x2 = []
         eje_y2 = []
-
         for i in puntis:
             eje_x2.append( puntos[i].Longitude)
             eje_y2.append( puntos[i].Latitude)
         
-        eje_x3 = []
-        eje_y3 = []
-        t=0
-        for i in range(0, len(puntis)-2, 3):
-            i1,i2,i3 = puntis[i], puntis[i+1], puntis[i+2]
-            eje_x3.append( (puntos[i1].Longitude, puntos[i2].Longitude,  puntos[i3].Longitude) )
-            eje_y3.append( (puntos[i1].Latitude, puntos[i2].Latitude,  puntos[i3].Latitude) )
-            ax1.plot(eje_x3[t], eje_y3[t], color = "red")
-            t=t+1
 
+        # PAINT SMALL LINES SHOWING EACH CURVES
+        # For this must be enabled de three "appends" in method Segment.GetCurves()
+        #eje_x3 = []
+        #eje_y3 = []
+        #t=0
+        #for i in range(0, len(puntis)-2, 3):
+        #    i1,i2,i3 = puntis[i], puntis[i+1], puntis[i+2]
+        #    eje_x3.append( (puntos[i1].Longitude, puntos[i2].Longitude,  puntos[i3].Longitude) )
+        #    eje_y3.append( (puntos[i1].Latitude, puntos[i2].Latitude,  puntos[i3].Latitude) )
+        #    ax1.plot(eje_x3[t], eje_y3[t], color = "red")
+        #    t=t+1
 
+        # Show some Segment info on the console
         print("SEGMENTO")
         print ("\tDist ->: ", round(seg.GetLength(),2), "m")
         print ("\tAcc+ ->: ", round(seg.GetAccElevation(),2), "m")
@@ -126,9 +129,11 @@ def f_showAcc():
         acc2 += seg.GetAccDescent()
         curv += curvis
         
-        ax1.scatter(eje_x, eje_y, color = "green")
-        ax1.scatter(eje_x2, eje_y2, color = "red")
+        ax1.scatter(eje_x, eje_y, color = "green")     # Paint ALL points
+        ax1.scatter(eje_x2, eje_y2, color = "red")      # Paint ONLY CURVE POINTS
         plt.show()
+
+        plt.close()
         
 
 
@@ -141,6 +146,81 @@ def f_showAcc():
     print ("HOLA")
 
 
+from naquever.prob_curvas import puntos_1 as pts1
+from naquever.prob_curvas import puntos_2 as pts2
+from naquever.prob_curvas import puntos_3 as pts3
+from naquever.prob_curvas import puntos_4 as pts4
+from naquever.prob_curvas import contar_curvas as contar
+
+
+def RevisarCurvas(pts):
+    a,b,c = contar(pts, 45)
+
+    print("Curvas: ", a)
+
+    #for i in range (0, a):
+    #    print ("\nIntens: ", b[i])
+    #    print ("Pto: (",c[i], ") = ", pts[c[i]])
+
+    return c
+
+def chiqui():
+
+    fig = plt.figure(figsize=(55, 25))
+    fig.suptitle("CURVES", size="xx-large")
+    grid = plt.GridSpec(2, 2, wspace=0.5, hspace=0.5)
+    ax1 = fig.add_subplot(grid[0, 1])
+    ax2 = fig.add_subplot(grid[1, 1])
+    ax3 = fig.add_subplot(grid[1, 0])
+    ax4 = fig.add_subplot(grid[0, 0])
+    
+    a1 = RevisarCurvas(pts1)
+    a2 = RevisarCurvas(pts2)
+    a3 = RevisarCurvas(pts3)
+    a4 = RevisarCurvas(pts4)
+
+    ejex1 = [(p[0]) for p in pts1]
+    ejey1 = [(p[1]) for p in pts1]
+    ejex2 = [(p[0]) for p in pts2]
+    ejey2 = [(p[1]) for p in pts2]
+    ejex3 = [(p[0]) for p in pts3]
+    ejey3 = [(p[1]) for p in pts3]
+    ejex4 = [(p[0]) for p in pts4]
+    ejey4 = [(p[1]) for p in pts4]
+
+    ax1.plot(ejex1, ejey1, color = "blue")
+    ax2.plot(ejex2, ejey2, color = "blue")
+    ax3.plot(ejex3, ejey3, color = "blue")
+    ax4.plot(ejex4, ejey4, color = "blue")
+
+    scat1x = [(pts1[p][0]) for p in a1]
+    scat1y = [(pts1[p][1]) for p in a1]
+    scat2x = [(pts2[p][0]) for p in a2]
+    scat2y = [(pts2[p][1]) for p in a2]
+    scat3x = [(pts3[p][0]) for p in a3]
+    scat3y = [(pts3[p][1]) for p in a3]
+    scat4x = [(pts4[p][0]) for p in a4]
+    scat4y = [(pts4[p][1]) for p in a4]
+
+    ax1.scatter(scat1x, scat1y, color = "green")
+    ax2.scatter(scat2x, scat2y, color = "green")
+    ax3.scatter(scat3x, scat3y, color = "green")
+    ax4.scatter(scat4x, scat4y, color = "green")
+
+
+
+    plt.show()
+
+
+
 if __name__ == "__main__":
+    
     f_showAcc()
+    #chiqui()
+   
+    
+
+   
+
+
     
