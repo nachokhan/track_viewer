@@ -114,14 +114,18 @@ class Segment:
             intensities {list} -- Degree of each curve
             curve_points {list} -- Each index with a detected curve
         """
-        curves = 0                      # Of cours, curves counter
+        curves_count = 0                # Of cours, curves counter
         points_with_curve = []          # Points of the middle point of each curve
-        curves_intenstities = []        # STRONGNESS of each curve (how "eng" is)
+        curves = []                     # tuples (3 points each) with each curve
+        curves_intenstities = []        # STRONGNESS of each curve (how "eng" is)        
         q_points = len(self.__points)-2
         for i in range (0, q_points):
             p1 = self.__points[i]
             p2 = self.__points[i+1]
             p3 = self.__points[i+2]
+
+            p2, i2 = self.GetNextPoint(p1, i+1)
+            p3, i3 = self.GetNextPoint(p2, i2+1)
 
             d1 = p1.DistanceTo(p2)
             d2 = p2.DistanceTo(p3)
@@ -131,12 +135,27 @@ class Segment:
 
             diff = abs(b2-b1)
 
-            if diff >= min_degree  and d1 >= min_p_sep and d2 >= min_p_sep:
-                curves += 1
-                #points_with_curve.append(i)
-                points_with_curve.append(i+1)
-                #points_with_curve.append(i+2)
+            if diff >= min_degree:#  and d1 >= min_p_sep and d2 >= min_p_sep:
+                curves_count += 1
+                points_with_curve.append(i2)
+                curves.append( (i, i2, i3) )
                 curves_intenstities.append( round(diff, 2) ) 
                 
 
-        return curves, curves_intenstities, points_with_curve
+        return curves_count, curves_intenstities, points_with_curve, curves
+
+    def GetNextPoint(self, p_ant, index):
+
+        if index >= len(self.__points):
+            return self.__points[index-1], index-1
+        
+        p = self.__points[index]
+
+        dist = p.DistanceTo(p_ant)
+
+        if  dist < 10:
+            p, index = self.GetNextPoint(p_ant, index+1)
+        
+        return p, index
+
+    
