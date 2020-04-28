@@ -145,6 +145,8 @@ class Segment:
         return curves_count, curves_intenstities, points_with_curve, curves
 
     def GetNextPoint(self, p_ant, index):
+        """ Returns the next point closer (min MIN_DISTANCE meters) to work with """
+        MIN_DISTANCE = 10
 
         if index >= len(self.__points):
             return self.__points[index-1], index-1
@@ -153,7 +155,7 @@ class Segment:
 
         dist = p.DistanceTo(p_ant)
 
-        if  dist < 10:
+        if  dist < MIN_DISTANCE:
             p, index = self.GetNextPoint(p_ant, index+1)
         
         return p, index
