@@ -1,8 +1,13 @@
 from TrackReader import GPXFileReader
 
-def main(fileName):
+def main():
+
+    fileName = "./data/gpx/larry.gpx"
 
     reader = GPXFileReader(fileName)
 
-    reader.Read()
+    track = reader.Read()
+
+    print (track.GetLength())
+    print (track.GetBoundaries())
 
