@@ -6,7 +6,7 @@ the respective PNG file.
 
 """
 
-from TrackReader import TrackFileReader
+from TrackReader import GPSVisualizerFileReader
 from trackdatamodel import Track
 from TrackViewer import TrackViewer, TrackPlotInfo
 from pathlib import Path
@@ -15,7 +15,7 @@ import sys
 
 def Plotear(fileName):
     
-    reader = TrackFileReader()
+    reader = GPSVisualizerFileReader()
     reader.ReadFile(fileName)
     track = reader.GetTrack()
 

@@ -96,7 +96,7 @@ def getXMLNodeText(xml, lista, i = 0):
 # TrackFileReader Class represents an object that reads a text file 
 # with gps segments and saves this data as a List Of Segments.
 #########
-class TrackFileReader:
+class GPSVisualizerFileReader:
 
     def __init__ (self):
         self.__segment = DrawableSegment()
