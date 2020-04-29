@@ -12,6 +12,7 @@ https://www.gpsvisualizer.com/tutorials/tracks.html
 
 from trackdatamodel.GPSPoint import GPSPoint
 from trackdatamodel.Segment import Segment
+from trackdatamodel.Segment import DrawableSegment
 from trackdatamodel.Track import Track
 
 from xml.dom import minidom
@@ -86,7 +87,7 @@ def getXMLNodeText(xml, lista, i = 0):
 class TrackFileReader:
 
     def __init__ (self):
-        self.__segment = Segment()
+        self.__segment = DrawableSegment()
         self.__track = Track()
 
     # Reads a text File by analizing and saving all the segments in the file    
@@ -109,7 +110,7 @@ class TrackFileReader:
             self.__segment.SetName(name)
 
         elif first_element == 'type' :
-            self.__segment = Segment()          
+            self.__segment = DrawableSegment()
             self.__track.AddSegment(self.__segment)           
         
     # Read the lines and obtain the values
