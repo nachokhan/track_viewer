@@ -14,6 +14,71 @@ from trackdatamodel.GPSPoint import GPSPoint
 from trackdatamodel.Segment import Segment
 from trackdatamodel.Track import Track
 
+from xml.dom import minidom
+import xml.etree.ElementTree as ET
+from bs4 import BeautifulSoup
+import sys
+
+
+
+class GPXFileReader:
+
+    def __init__(self, filename):
+        self.__file = filename
+
+    def SetFileName (self, filename):
+        self.__filen = filename
+
+    def Read(self):
+        
+        GPX_STR_TRACK_NAME = "gpx,metadata,name".split(",")
+        GPX_STR_AUTHOR_NAME = "gpx,metadata,author,name".split(",")
+        GPX_STR_TRACK_POINTS = "gpx,trk,trkseg,trkpt".split(",")
+
+
+        with open(self.__file) as fp:
+            root = BeautifulSoup(fp)
+
+        try:
+            trackName = getXMLNodeText(root, GPX_STR_TRACK_NAME)
+            authorName = getXMLNodeText(root, GPX_STR_AUTHOR_NAME)
+            trackPoints =  getXMLNodes(root, GPX_STR_TRACK_POINTS)
+
+            for pts in trackPoints:
+                lat = float(pts["lat"])
+                lon = float(pts["lon"]) 
+                elev = float(getXMLNodeText(pts, ["ele"]))
+                gps = GPSPoint(lat, lon, elev)
+
+            b = 5
+        
+        except TypeError as err:
+            print("Error parsing GPX File: {0}".format(self.__file))
+
+def getXMLNodes(xml, lista, i = 0):
+    node = None
+    new_xml = xml.find(lista[i])
+    if new_xml:
+        if i < len(lista) - 2:
+            node = getXMLNodes(new_xml, lista, i+1)
+        else:
+            ulitmo = lista[-1]
+            node = new_xml.findAll(ulitmo)
+
+    return node
+    
+def getXMLNodeText(xml, lista, i = 0):
+    texto = None
+    new_xml = xml.find(lista[i])
+    if new_xml:
+        if i < len(lista) - 1:
+            texto = getXMLNodeText(new_xml, lista, i+1)
+        else:
+            texto = new_xml.text
+    
+    return texto
+
+
 #########
 # TrackFileReader Class represents an object that reads a text file 
 # with gps segments and saves this data as a List Of Segments.
@@ -54,7 +119,6 @@ class TrackFileReader:
         name = values[4]
         color = values[5][:-1]
         return (p, name, color)
-
 
     # Returns all the segments in the file.
     def GetTrack(self):
