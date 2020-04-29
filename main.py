@@ -15,6 +15,8 @@ if __name__ == "__main__":
     #Curvas_02.main("./data/txt/rincon1.txt", 50, scatter_all=False, scatter_curves=True, plot_curves=True)
     #Curvas_01.main()
 
-    GPXRead_01.main("./data/gpx/cristo2.gpx")
+    GPXRead_01.main()
+
+
    
     
