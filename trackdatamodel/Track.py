@@ -49,6 +49,9 @@ class Track:
 
     def GetBoundaries(self):
         """ Returns Boundary Box as tuple (MinLon, MaxLon, MinLat, MaxLat) """
+        if not self.__northest_point:
+            self.__calcExtremPoints()
+
         minLon = self.__westest_point[0]
         maxLon = self.__eastest_point[0]
         minLat = self.__southest_point[1]
