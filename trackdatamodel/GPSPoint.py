@@ -61,8 +61,9 @@ class GPSPoint:
         delta_y = p2.Elevation - self.Elevation
         delta_x = self.h_distance_to(p2)
 
-        return (delta_y / delta_x * 1000)
-        
+        if delta_x != 0:
+            return (delta_y / delta_x * 100)
+        return 100        
     
     def h_distance_to(self, p2):
         """ Returns the horizontal distance between a point itself,
