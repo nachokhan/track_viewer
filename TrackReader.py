@@ -110,6 +110,8 @@ class GPSVisualizerFileReader:
         for line in lines:
             self.analyzeLine(line)
         f.close()
+        
+        return self.__track
 
     # Analyzes a line in order to extract a gps point or a "start of segment"
     def analyzeLine(self, line):
