@@ -55,9 +55,18 @@ class GPSPoint:
             pepe = 90
 
         return round (pepe-ang, 2)
+
+    def SlopeWith(self, p2):
+        """ Get the slope (in %) between a point a itself """
+        delta_y = p2.Elevation - self.Elevation
+        delta_x = self.h_distance_to(p2)
+
+        return (delta_y / delta_x * 1000)
         
     
     def h_distance_to(self, p2):
+        """ Returns the horizontal distance between a point itself,
+        as there were at same elevation """
         R = 6373.0
         lat1, lon1 = radians(self.Latitude), radians(self.Longitude)
         lat2, lon2 = radians(p2.Latitude), radians(p2.Longitude)
