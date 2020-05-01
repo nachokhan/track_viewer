@@ -22,6 +22,10 @@ class Track:
     def AddSegment(self, segment):
         """ Add a new segment to the track """
         self.__segments.append(segment)
+
+    def AddSegments(self, segments):
+        """ Add a list of segments to the track """
+        self.__segments += segments
         
     def GetSegments(self):
         """ Returns all the segments in the track """

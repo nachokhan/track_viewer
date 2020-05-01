@@ -28,11 +28,15 @@ from math import radians, degrees
 
 class Segment:
     def __init__(self):
-        self.__points = []        
+        self.__points = []
    
     def AddPoint(self, point):
         """ Adds a new GPS point to the segment """
-        self.__points.append(point)    
+        self.__points.append(point)
+
+    def AddPoints(self, points):
+        """ Adds a list of points to the segment """
+        self.__points += points
 
     def GetSlope(self):
         """ Returns the slope of the whole segment """
@@ -48,8 +52,7 @@ class Segment:
         points_range = len(self.__points)-1
         for i in range (points_range):
             d += self.__points[i].DistanceTo(self.__points[i+1])
-            self.__distance__ = d
-        return self.__distance__
+        return d
 
     def GetElevationExtremes(self):
         """ Returns the maximum and the minimum elevations of the segment"""
@@ -74,7 +77,7 @@ class Segment:
         return  acc
 
     def GetAccDescent(self):
-        """ Returns the accumulated descending elevation of the segment """
+        """ Returns the accumulated descending elevation ('-' sign) of the segment """
         acc = 0
         q_points = len(self.__points)-1
         for i in range (0, q_points):
