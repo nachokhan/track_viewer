@@ -16,7 +16,26 @@ def sign(x) :
     if x == 0: return -1
 
 
-def ExtractSegments_1(track):
+def SegmentFromChangePositions(segment, segmentations):
+
+    points = segment.GetPoints()   
+    segments = []    
+
+    #segmentations.insert(0, 0)
+    segmentations.append(len(points))
+
+    prev = 0
+    for actual in segmentations:
+        pts = points[prev:actual]        
+        seg = Segment()
+        seg.AddPoints (pts)
+        segments.append(seg)
+        prev = actual    
+
+
+    return segments
+
+def ExtractSegments_1(track, method = 0):
     """Make a new track with one or more segments. Segments are
     being divided according different algoritmhs. At the time 
     of writing, the best algorithm is still not determined.
@@ -29,16 +48,145 @@ def ExtractSegments_1(track):
     """
 
     newTrack = Track()          # New track to be returned
-    segments = []               # List with the new segments
+    newSegments = []            # List with the new segments
     changePositions = []        # Positions where the changes UP/DOWN take place
 
     uniqueSegment = track.GetSegments()[0]
 
-    changePositions = GetSlopeSignChangesPosition(uniqueSegment)
+    RemoveShortDistances(uniqueSegment, 4)
+    uniqueSegment2 =  NormalizeElevations(uniqueSegment)
 
-    # TO CONTINUE
+    #graficar_dos_x(uniqueSegment, uniqueSegment2)
 
+    changePositions = GetSlopeSignChangesPosition(uniqueSegment2)
+    changePositions = SegmentByHeight(uniqueSegment2, changePositions)
+
+    newSegments = SegmentFromChangePositions(uniqueSegment2, changePositions)
+    newTrack.AddSegments(newSegments)
     return newTrack
+
+
+def graficar_dos_x(s1, s2):
+    from matplotlib import pyplot as plt
+    fig = plt.figure(figsize=(55, 25))
+    fig.suptitle("slopes", size="xx-large")
+    grid = plt.GridSpec(1, 1, wspace=0.5, hspace=0.5)
+    ax1 = fig.add_subplot(grid[0, 0])
+    p1 = s1.GetPoints()
+    p2 = s2.GetPoints()
+    x = []
+    y1 = []
+    y2 = []
+    for i in range( len(p1)):
+        x.append(i)
+        y1.append(p1[i].Elevation)
+        y2.append(p2[i].Elevation)
+    l1 = 0
+    l2 = len(p1)
+    ax1.plot(x[l1:l2], y1[l1:l2], color = "blue")
+    ax1.plot(x[l1:l2], y2[l1:l2], color = "red")
+    plt.show()
+    del plt
+
+def NormalizeElevations(segment):
+
+    import copy
+    points = segment.GetPoints()
+    newPoints = copy.deepcopy(points)
+
+    win = 9
+    offset = int((win-1)/2)
+    q_points = len(newPoints)
+
+    for i in range (offset, q_points - offset):
+        aver = 0
+        for j in range(-offset, offset+1):
+            aver += points[i+j].Elevation
+        newPoints[i].Elevation = aver / win
+    
+    for i in range(0, offset+2):
+        aver = 0
+        for j in range(0, win):
+            aver += points[i+j].Elevation
+        newPoints[i].Elevation = aver / win
+
+    for i in range(q_points-offset-2, q_points):
+        aver = 0
+        for j in range(0, win):
+            aver += points[i-j].Elevation
+        newPoints[i].Elevation = aver / win        
+
+
+    newSegment = Segment()
+    newSegment.AddPoints(newPoints)
+
+    return newSegment
+
+def RemoveShortDistances(segment, min_distance = 4):
+    """ Exactly that """
+
+    points = segment.GetPoints().copy()
+    pointsToDelete = []
+
+    for i in range(len(points)-1):
+        
+        p1 = points[i]
+        p2 = points[i+1]
+        dist = p1.DistanceTo(p2)
+
+        if dist <= min_distance:
+            pointsToDelete.append(i)
+
+    pointsToDelete.reverse()
+
+    for i in pointsToDelete:
+        del points[i]
+
+    newSegment = Segment()
+    newSegment.AddPoints(points)
+
+    return newSegment
+    
+def SegmentByHeight(segment, segmentations):
+    """ Makes a new segmentation based on the heights difference """
+    
+    mh,Mh = segment.GetElevationExtremes()
+
+    dht = Mh-mh
+    min_h = dht * 0.015
+    
+    points = segment.GetPoints()
+    newSegmentations = []
+    l0 = 0
+    #newSegmentations.append(segmentations[0])
+
+    for i in range(1, len(segmentations)):
+        l1 = segmentations[i-1]
+        l2 = segmentations[i]
+
+        p_seg = Segment()
+        p_seg.AddPoints (points[l0:l1])
+        p_delta_h = p_seg.GetAccElevation() + p_seg.GetAccDescent()
+        p_delta_h_p = max (p_seg.GetAccElevation(), abs(p_seg.GetAccDescent()))
+        p_delta_h = p_delta_h_p * sign(p_delta_h)
+
+        seg = Segment()
+        seg.AddPoints (points[l1:l2])
+        delta_h = seg.GetAccElevation() + seg.GetAccDescent()
+       
+        factor = abs(p_delta_h * ((-5.9459*10**(-6))+0.19891))
+
+        if sign(delta_h) != sign(p_delta_h):
+            #if abs(delta_h) > 0.1 * abs(p_delta_h) and abs(delta_h) > min_h:
+            if abs(delta_h) > min_h:
+                newSegmentations.append(l1)
+                l0 = l1
+            #else:
+                #newSegmentations.pop()
+                #newSegmentations.append(l2)
+                #        
+        
+    return newSegmentations
 
 
 def GetSlopeSignChangesPosition(segment):
