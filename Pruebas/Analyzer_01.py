@@ -1,18 +1,21 @@
 from TrackAnalyzer import *
 from Pruebas.prob_curvas import puntos_1 as pts1
 from TrackReader import GPSVisualizerFileReader
+from TrackReader import GPXFileReader
+
+
+from TrackViewer import TrackPlotInfo, TrackViewer
 
 
 from matplotlib import pyplot as plt
 
-def main():
-
+def Prueba_GetSlopeChanges():
     read = GPSVisualizerFileReader()
     track = read.ReadFile("./data/txt/rincon1.txt")
     
     segments = track.GetSegments()
 
-  
+
     fig = plt.figure(figsize=(55, 25))
     fig.suptitle("slopes", size="xx-large")
     grid = plt.GridSpec(1, 1, wspace=0.5, hspace=0.5)
@@ -65,13 +68,38 @@ def main():
             ax1.axvline( x, 0, str(x), color = "blue")
             #ax1.scatter(xx, yy, color = "black")
             if c == 3 : c = -1
-            c=c+1
-            
-        prev = p
-
-        
+            c=c+1            
+        prev = p        
                  
     plt.show()
 
     plt.close()
+
+def Prueba_ExtractSegments():
+    
+    read2 = GPXFileReader("./data/gpx/perilago.gpx")
+
+    track = read2.Read()
+
+    newTrack = ExtractSegments_1(track)
+
+    plotInfo = TrackPlotInfo(newTrack)
+    plotInfo.ExtractTrackData()
+
+    vie = TrackViewer()
+    plot = vie.BuildPlot(plotInfo, max_cols=3)
+
+    vie.ShowPlot(plot)
+    vie.ClearPlot(plot)
+    
+
+
+def main():
+    #Prueba_GetSlopeChanges()
+
+    Prueba_ExtractSegments()
+
+
+  
+    
   
