@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import math
 import TrackReader
+from trackdatamodel.Segment import Segment, DrawableSegment
+from trackdatamodel.Track import Track
 
 class TrackPlotInfo:
 
@@ -22,12 +24,16 @@ class TrackPlotInfo:
         self.__lat_segs = []
         self.__lon_segs = []
         self.__name = name
+        self.DataAlredyExtracted = False
 
     def SetTrack(self, track):
         self.__track = track
 
     def GetName(self):
         return self.__name
+
+    def DataAlreadyExtracted(self):
+        return self.DataAlredyExtracted
 
     def GetSegmentsData(self):
         """ Returns a tuple with segment's array containing X[], Y[] and color for each segment """
@@ -68,7 +74,11 @@ class TrackPlotInfo:
             lons=[]     
             x = []      # segment distances (must be calculated from gps points)
             y = []      # segment elevations
-            color = segment.GetColor()
+
+            color = "blue"
+            if segment is DrawableSegment:
+                color = segment.GetColor()
+                
             points = segment.GetPoints()
             cant_points = len(points)-1
 
@@ -112,6 +122,7 @@ class TrackPlotInfo:
         self.__intersections = inters_x
         self.__lat_segs = lat_segments
         self.__lon_segs = lon_segments
+        self.DataAlredyExtracted = True
         
 
 
@@ -119,6 +130,9 @@ class TrackViewer:
 
     def BuildPlot(self, plotInfo, max_cols = 0, intersection_window = 50):
         """Given a TrackPlotInfo object, build the XXXXX Information Page."""
+
+        if not plotInfo.DataAlreadyExtracted():
+            raise Exception("You must first call plotInfo.ExtractData() !!!")
 
         x_segments,  y_segments, c_segments = plotInfo.GetSegmentsData()
         inters_x = plotInfo.GetIntersectionsList()
@@ -213,6 +227,9 @@ class TrackViewer:
     def SavePlotAs(self, plot, fileName, transparent = True):
         """Saves a plot into a PNG file """
         plot.savefig(fileName)
+
+    def ClearPlot(self, plot):
+        del plot
 
 
 class NoTrackException(Exception):
