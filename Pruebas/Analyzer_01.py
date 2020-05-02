@@ -75,16 +75,16 @@ def Prueba_GetSlopeChanges():
 
     plt.close()
 
-def Prueba_ExtractSegments():
-    
-    read2 = GPXFileReader("./data/gpx/perilago.gpx")
+def Prueba_ExtractSegments():   
+
+    read2 = GPXFileReader("./data/gpx/rocas_deu.gpx")
 
     track = read2.Read()
 
     newTrack = ExtractSegments_1(track)
 
     plotInfo = TrackPlotInfo(newTrack)
-    plotInfo.ExtractTrackData()
+    plotInfo.ExtractTrackData(automatic_colors=True)
 
     vie = TrackViewer()
     plot = vie.BuildPlot(plotInfo, max_cols=3)
@@ -93,6 +93,26 @@ def Prueba_ExtractSegments():
     vie.ClearPlot(plot)
     
 
+def make_all_Segments():
+    import glob
+
+    files = [f for f in glob.glob("./data/gpx/*.gpx", recursive=False)]
+
+    for f in files:
+        print ("Processing ", f, "...", end =" ")
+        read2 = GPXFileReader(f)
+        track = read2.Read()
+        newTrack = ExtractSegments_1(track)
+        plotInfo = TrackPlotInfo(newTrack)
+        plotInfo.ExtractTrackData()
+        vie = TrackViewer()
+        print (" Ploting....  ", end =" ")
+        plot = vie.BuildPlot(plotInfo)
+        vie.SavePlotAs(plot, f+".png")
+        vie.ClearPlot(plot)
+        print (" Finished! Ok  ")
+
+    print ("READY! :)")
 
 def main():
     #Prueba_GetSlopeChanges()
