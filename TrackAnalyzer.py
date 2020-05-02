@@ -154,6 +154,8 @@ def SegmentByHeight(segment, segmentations):
 
     dht = Mh-mh
     min_h = dht * 0.015
+    if min_h < 15:
+        min_h = 15
     
     points = segment.GetPoints()
     newSegmentations = []
