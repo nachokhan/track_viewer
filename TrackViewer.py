@@ -139,7 +139,7 @@ class TrackPlotInfo:
         
 
 
-class TrackViewer:
+class TrackViewer:   
 
     def BuildPlot(self, plotInfo, max_cols = 0, intersection_window = 50):
         """Given a TrackPlotInfo object, build the XXXXX Information Page."""
@@ -155,7 +155,9 @@ class TrackViewer:
         intersections = len(inters_x) - 1
 
         if max_cols == 0:
-            if intersections <= 5:
+            if intersections == 0:
+                max_cols = 1
+            elif intersections <= 5:
                 max_cols = intersections
             else:
                 max_cols = 4
