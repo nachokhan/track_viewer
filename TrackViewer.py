@@ -13,6 +13,8 @@ from trackdatamodel.Track import Track
 
 class TrackPlotInfo:
 
+    COLORS = ["blue", "green", "red", "blueviolet", "navy", "fuchsia", "orange"]
+
     def __init__(self, track = None, name = None):
         self.__track = track
         self.__x_segs = []
@@ -49,8 +51,10 @@ class TrackPlotInfo:
         """ Returns a tuple with segment's array containing Lons[], Lats[] for each segment"""
         return (self.__lon_segs, self.__lat_segs)
 
-    def ExtractTrackData(self):
-        """ Given a Track, examine and extract all the needed information for plotting """
+    def ExtractTrackData(self, automatic_colors = True):
+        """ Given a Track, examine and extract all the needed information for plotting.
+        If automatic_color = True it will assign automatic colors for each segment if they
+        are not of the type DrawableSegments """
 
         if not self.__track:
             raise NoTrackException("Track is null", "There is no track assigned to the instance. Maybe you forgot to call the constructor with a track or to call SetTrack Method")
@@ -68,6 +72,8 @@ class TrackPlotInfo:
 
         dist_acc = 0    #Accumulated distance over all segments
 
+        next_color = 0  # To assign colors automatically, if it isn't a DrawableSegment
+
         for segment in segments:
 
             lats=[]     # segment latitude's points
@@ -75,9 +81,16 @@ class TrackPlotInfo:
             x = []      # segment distances (must be calculated from gps points)
             y = []      # segment elevations
 
+            
+            # Assign colors to each segemnt (default is blue)
             color = "blue"
             if segment is DrawableSegment:
                 color = segment.GetColor()
+            elif automatic_colors == True:
+                color = TrackPlotInfo.COLORS[next_color]
+                next_color += 1
+                if next_color >= len(TrackPlotInfo.COLORS): next_color = 0
+
                 
             points = segment.GetPoints()
             cant_points = len(points)-1
