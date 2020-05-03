@@ -26,7 +26,6 @@ def FIETS_Index(delta_h, distance, altitude):
     return delta_h**2 / (distance * 10)
 
 
-
 def ClimByBike_Index(delta_h, distance, altitude):
     T = 0
     if altitude >= 1000:
@@ -39,13 +38,24 @@ def ClimByBike_Index(delta_h, distance, altitude):
     return T1 + T2 + T3 + T
 
 
+def CalcSegmentDifficulty(segment, method):
 
-def CalcSegmentDifficulty(segment):
-    return None
+    dh = segment.GetAccElevation() #+ segment.GetAccDescent()
+    dx = segment.GetLength()
+    alt = segment.GetElevationExtremes()[1]
+
+    a = method(dh, dx, alt)
+
+    print (str(round(a,2)) +", ", end = " ")
+
+    return a
 
 
+def CalcTrackDifficulty(track, method = FIETS_Index):
 
+    dif = 0
+    for seg in track.GetSegments():
+        dif += CalcSegmentDifficulty(seg, method)
 
-def CalcTrackDifficulty(track):
-    return None
+    return dif
 
