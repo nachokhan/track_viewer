@@ -40,7 +40,7 @@ class GPXFileReader:
         newTrack = Track()
 
         with open(self.__file) as fp:
-            root = BeautifulSoup(fp)
+            root = BeautifulSoup(fp, features="lxml")
 
         try:            
             trackName = getXMLNodeText(root, GPX_STR_TRACK_NAME)
