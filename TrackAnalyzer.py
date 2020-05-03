@@ -72,15 +72,28 @@ def graficar_dos_x(s1, s2):
     fig.suptitle("slopes", size="xx-large")
     grid = plt.GridSpec(1, 1, wspace=0.5, hspace=0.5)
     ax1 = fig.add_subplot(grid[0, 0])
+
+    if s1 is Segment and s2 is Segment:
     p1 = s1.GetPoints()
     p2 = s2.GetPoints()
+    else:
+        p1 = s1
+        p2 = s2
+    
     x = []
     y1 = []
     y2 = []
+
+    if p1[0] is GPSPoint:
     for i in range( len(p1)):
         x.append(i)
         y1.append(p1[i].Elevation)
         y2.append(p2[i].Elevation)
+    else:
+        x = range(0, len(p1))
+        y1 = p1
+        y2 = p2
+
     l1 = 0
     l2 = len(p1)
     ax1.plot(x[l1:l2], y1[l1:l2], color = "blue")
