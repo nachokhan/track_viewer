@@ -244,6 +244,7 @@ class TrackViewer:
         plot.savefig(fileName)
 
     def ClearPlot(self, plot):
+        plot.close()
         del plot
 
 
