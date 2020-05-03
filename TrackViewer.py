@@ -17,6 +17,11 @@ class TrackPlotInfo:
 
     def __init__(self, track = None, name = None):
         self.__track = track
+        self.__resetValues()
+        self.__name = name
+        self.DataAlredyExtracted = False
+
+    def __resetValues(self):
         self.__x_segs = []
         self.__y_segs = []
         self.__c_segs = []
@@ -25,8 +30,7 @@ class TrackPlotInfo:
         self.__intersections = []
         self.__lat_segs = []
         self.__lon_segs = []
-        self.__name = name
-        self.DataAlredyExtracted = False
+        self.__curves = []
 
     def SetTrack(self, track):
         self.__track = track
@@ -51,6 +55,9 @@ class TrackPlotInfo:
         """ Returns a tuple with segment's array containing Lons[], Lats[] for each segment"""
         return (self.__lon_segs, self.__lat_segs)
 
+    def GetCurves(self):
+        return self.__curves
+
     def ExtractTrackData(self, automatic_colors = True):
         """ Given a Track, examine and extract all the needed information for plotting.
         If automatic_color = True it will assign automatic colors for each segment if they
@@ -58,6 +65,8 @@ class TrackPlotInfo:
 
         if not self.__track:
             raise NoTrackException("Track is null", "There is no track assigned to the instance. Maybe you forgot to call the constructor with a track or to call SetTrack Method")
+
+        self.__resetValues()
 
         segments = self.__track.GetSegments()       
             
@@ -80,8 +89,7 @@ class TrackPlotInfo:
             lons=[]     
             x = []      # segment distances (must be calculated from gps points)
             y = []      # segment elevations
-
-            
+           
             # Assign colors to each segemnt (default is blue)
             color = "blue"
             if segment is DrawableSegment:
@@ -91,12 +99,13 @@ class TrackPlotInfo:
                 next_color += 1
                 if next_color >= len(TrackPlotInfo.COLORS): next_color = 0
 
-                
+            curves = segment.GetCurves(min_degree = 90)[2]
+
             points = segment.GetPoints()
-            cant_points = len(points)-1
+            cant_points = len(points)
 
             # calculate distance for points (0-->1), (1-->2) ... (N-1-->N)
-            for i in range(cant_points):
+            for i in range(cant_points-1):
                 lats.append(points[i].Latitude)
                 lons.append(points[i].Longitude)
                 y.append(points[i].Elevation)                
@@ -104,7 +113,12 @@ class TrackPlotInfo:
                 all_y.append(points[i].Elevation)
                 all_x.append(dist_acc)
                 dist_acc += points[i].DistanceTo(points[i+1])
+
+                # Extract Curves with degree >= 90
+                if i in curves:
+                    self.__curves.append( ( all_x[-1], all_y[-1]))
             
+
             # last points are not contempled in first "for loop" we add them here        
             y.append(points[i+1].Elevation)
             x.append(dist_acc)
@@ -120,6 +134,9 @@ class TrackPlotInfo:
             lat_segments.append(lats)
             lon_segments.append(lons)
             
+
+
+        
 
 
         # NOTE: In the whole method I worked with standalone variables instead of 
@@ -141,7 +158,7 @@ class TrackPlotInfo:
 
 class TrackViewer:   
 
-    def BuildPlot(self, plotInfo, max_cols = 0, intersection_window = 50):
+    def BuildPlot(self, plotInfo, max_cols = 0, intersection_window = 50, show_curves=True):
         """Given a TrackPlotInfo object, build the XXXXX Information Page."""
 
         if not plotInfo.DataAlreadyExtracted():
@@ -151,6 +168,7 @@ class TrackViewer:
         inters_x = plotInfo.GetIntersectionsList()
         all_x , all_y = plotInfo.GetAllPoints()
         title = plotInfo.GetName()
+        curves = plotInfo.GetCurves()
 
         intersections = len(inters_x) - 1
 
@@ -195,6 +213,13 @@ class TrackViewer:
             int_x = all_x[i]
             int_y = all_y[i]
             main_ax.scatter(int_x, int_y, color = "black", edgecolor="white", marker = '^')            
+
+
+        # SCATTER CURVES        
+        for c in curves:
+            int_x = c[0]
+            int_y = c[1]
+            main_ax.scatter(int_x, int_y, color = "red", edgecolor="white", marker = 'd')
 
 
         # DRAW EACH INTERSECTION
