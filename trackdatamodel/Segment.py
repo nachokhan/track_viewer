@@ -38,9 +38,21 @@ class Segment:
         """ Adds a list of points to the segment """
         self.__points += points
 
-    def GetSlope(self):
-        """ Returns the slope of the whole segment """
-        return 0 # todo    
+    def GetRawSlope(self):
+        """ Returns the raw slope of the whole segment (p0 -> pn) """
+        dh = self.GetAccElevation()+self.GetAccDescent()
+        dx = self.GetLength()
+        if dx == 0: return 0
+        return dh/dx * 100
+
+    def GetAvSlope(self):
+        """ Returns the slope average of the whole segment """
+        l = len(self.__points)
+        av = 0
+        for i in range (1, l):
+            av += self.__points[i].SlopeWith(self.__points[i-1])
+        
+        return -av/l
 
     def GetPoints(self):
         """ Return a list of points """
