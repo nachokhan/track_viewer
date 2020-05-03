@@ -6,6 +6,7 @@ from TrackReader import GPXFileReader
 
 from TrackViewer import TrackPlotInfo, TrackViewer
 
+from TrackJudge import CalcSegmentDifficulty, CalcTrackDifficulty, FIETS_Index, ClimByBike_Index
 
 from matplotlib import pyplot as plt
 
@@ -77,11 +78,13 @@ def Prueba_GetSlopeChanges():
 
 def Prueba_ExtractSegments():   
 
-    read2 = GPXFileReader("./data/gpx/bosque1.gpx")
+    read2 = GPXFileReader("./data/gpx/subidapotre.gpx")
 
     track = read2.Read()
 
     newTrack = ExtractSegments_1(track)
+
+    print ("DIFF: ", CalcTrackDifficulty(newTrack, method=ClimByBike_Index ))
 
     plotInfo = TrackPlotInfo(newTrack)
     plotInfo.ExtractTrackData(automatic_colors=True)
