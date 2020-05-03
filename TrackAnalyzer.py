@@ -196,10 +196,6 @@ def SegmentByHeight(segment, segmentations):
             if abs(delta_h) > min_h:
                 newSegmentations.append(l1)
                 l0 = l1
-            #else:
-                #newSegmentations.pop()
-                #newSegmentations.append(l2)
-                #        
         
     return newSegmentations
 
