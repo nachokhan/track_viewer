@@ -6,6 +6,7 @@ make an analysis of teh Track
 
 from trackdatamodel.Track import Track
 from trackdatamodel.Segment import Segment
+from trackdatamodel.GPSPoint import GPSPoint
 
 def sign(x) :
     """ Returns the sign of X. Zero is considered negative because
@@ -51,7 +52,7 @@ def ExtractSegments_1(track, method = 0):
     newSegments = []            # List with the new segments
     changePositions = []        # Positions where the changes UP/DOWN take place
 
-    uniqueSegment = track.GetSegments()[0]
+    uniqueSegment = track.GetSegments()[0]   
 
     RemoveShortDistances(uniqueSegment, 4)
     uniqueSegment2 =  NormalizeElevations(uniqueSegment)
@@ -64,42 +65,6 @@ def ExtractSegments_1(track, method = 0):
     newSegments = SegmentFromChangePositions(uniqueSegment2, changePositions)
     newTrack.AddSegments(newSegments)
     return newTrack
-
-
-def graficar_dos_x(s1, s2):
-    from matplotlib import pyplot as plt
-    fig = plt.figure(figsize=(55, 25))
-    fig.suptitle("slopes", size="xx-large")
-    grid = plt.GridSpec(1, 1, wspace=0.5, hspace=0.5)
-    ax1 = fig.add_subplot(grid[0, 0])
-
-    if s1 is Segment and s2 is Segment:
-    p1 = s1.GetPoints()
-    p2 = s2.GetPoints()
-    else:
-        p1 = s1
-        p2 = s2
-    
-    x = []
-    y1 = []
-    y2 = []
-
-    if p1[0] is GPSPoint:
-    for i in range( len(p1)):
-        x.append(i)
-        y1.append(p1[i].Elevation)
-        y2.append(p2[i].Elevation)
-    else:
-        x = range(0, len(p1))
-        y1 = p1
-        y2 = p2
-
-    l1 = 0
-    l2 = len(p1)
-    ax1.plot(x[l1:l2], y1[l1:l2], color = "blue")
-    ax1.plot(x[l1:l2], y2[l1:l2], color = "red")
-    plt.show()
-    del plt
 
 def NormalizeElevations(segment):
 
@@ -173,8 +138,7 @@ def SegmentByHeight(segment, segmentations):
     points = segment.GetPoints()
     newSegmentations = []
     l0 = 0
-    #newSegmentations.append(segmentations[0])
-
+    
     for i in range(1, len(segmentations)):
         l1 = segmentations[i-1]
         l2 = segmentations[i]
@@ -223,7 +187,37 @@ def GetSlopeSignChangesPosition(segment):
     return positions
 
 
-        
+def graficar_dos_x(s1, s2):
+    from matplotlib import pyplot as plt
+    fig = plt.figure(figsize=(55, 25))
+    fig.suptitle("slopes", size="xx-large")
+    grid = plt.GridSpec(1, 1, wspace=0.5, hspace=0.5)
+    ax1 = fig.add_subplot(grid[0, 0])
 
+    if s1 is Segment and s2 is Segment:
+        p1 = s1.GetPoints()
+        p2 = s2.GetPoints()
+    else:
+        p1 = s1
+        p2 = s2
+    
+    x = []
+    y1 = []
+    y2 = []
 
+    if p1[0] is GPSPoint:
+        for i in range( len(p1)):
+            x.append(i)
+            y1.append(p1[i].Elevation)
+            y2.append(p2[i].Elevation)
+    else:
+        x = range(0, len(p1))
+        y1 = p1
+        y2 = p2
 
+    l1 = 0
+    l2 = len(p1)
+    ax1.plot(x[l1:l2], y1[l1:l2], color = "blue")
+    ax1.plot(x[l1:l2], y2[l1:l2], color = "red")
+    plt.show()
+    del plt
