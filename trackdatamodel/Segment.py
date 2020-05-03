@@ -110,14 +110,14 @@ class Segment:
 
         Returns:
             curves_count {int} -- Quantity of curves detected
-            intensities {list} -- Degree of each curve
+            degrees {list} -- Degree of each curve
             mid_points_curves {list} -- Each index with the "middle point" of the curve
             curves {list(tuples)} -- list of tuples with the "curves" itself.
         """
-        curves_count = 0                # Of cours, curves counter
-        mid_points_curves = []          # Points of the middle point of each curve
-        curves = []                     # tuples (3 points each) with each curve
-        curves_intenstities = []        # STRONGNESS of each curve (how "eng" is)        
+        curves_count = 0        # Of cours, curves counter
+        mid_points = []         # Points of the middle point of each curve
+        curves = []             # tuples (3 points each) with each curve
+        degrees = []            # STRONGNESS of each curve (how "eng" is)        
         q_points = len(self.__points)-2
         for i in range (0, q_points):
             p1 = self.__points[i]
@@ -137,12 +137,12 @@ class Segment:
 
             if diff >= min_degree:#  and d1 >= min_p_sep and d2 >= min_p_sep:
                 curves_count += 1
-                mid_points_curves.append(i2)
+                mid_points.append(i2)
                 curves.append( (i, i2, i3) )
-                curves_intenstities.append( round(diff, 2) ) 
+                degrees.append( round(diff, 2) ) 
                 
 
-        return curves_count, curves_intenstities, mid_points_curves, curves
+        return curves_count, degrees, mid_points, curves
 
     def GetNextPoint(self, prev_p, index):
         """ Returns the next point closer (min MIN_DISTANCE meters) to work with """
