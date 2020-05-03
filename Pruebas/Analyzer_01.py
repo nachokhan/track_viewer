@@ -78,51 +78,65 @@ def Prueba_GetSlopeChanges():
 
 def Prueba_ExtractSegments():   
 
-    read2 = GPXFileReader("./data/gpx/subidapotre.gpx")
+    read2 = GPXFileReader("./data/gpx/dedo.gpx")
 
     track = read2.Read()
 
     newTrack = ExtractSegments_1(track)
 
-    print ("DIFF: ", CalcTrackDifficulty(newTrack, method=ClimByBike_Index ))
+    dif = CalcTrackDifficulty(newTrack, method=ClimByBike_Index, curves=False )
+    print ("\nDIFF: ", dif, "\n")
 
-    plotInfo = TrackPlotInfo(newTrack)
-    plotInfo.ExtractTrackData(automatic_colors=True)
-
-    vie = TrackViewer()
-    plot = vie.BuildPlot(plotInfo, max_cols=3)
-
-    vie.ShowPlot(plot)
-    vie.ClearPlot(plot)
+    #plotInfo = TrackPlotInfo(newTrack)
+    #plotInfo.ExtractTrackData(automatic_colors=True)
+    #vie = TrackViewer()
+    #plot = vie.BuildPlot(plotInfo, max_cols=3)
+    #vie.ShowPlot(plot)
+    #vie.ClearPlot(plot)
     
 
-def make_all_Segments():
+def make_all_Segments(must_plot = False):
     import glob
 
     files = [f for f in glob.glob("./data/gpx/*.gpx", recursive=False)]
+
+    text = "Ruta, FIETS, CLIMB, FIETS(C), CLIMB(C)\n"
 
     for f in files:
         print ("Processing ", f, "...", end =" ")
         read2 = GPXFileReader(f)
         track = read2.Read()
         newTrack = ExtractSegments_1(track)
-        plotInfo = TrackPlotInfo(newTrack)
-        plotInfo.ExtractTrackData()
-        vie = TrackViewer()
-        print ("[t\tPloting....  ", end =" ")
-        plot = vie.BuildPlot(plotInfo)
-        vie.SavePlotAs(plot, f+".png")
-        vie.ClearPlot(plot)
-        print ("Finished! Ok  ")
+        dif1 = round(CalcTrackDifficulty(newTrack, method=FIETS_Index, curves=False )*10, 1)
+        dif2 = round(CalcTrackDifficulty(newTrack, method=ClimByBike_Index, curves=False ), 1)
+        dif3 = round(CalcTrackDifficulty(newTrack, method=FIETS_Index, curves=True )*10, 1)
+        dif4 = round(CalcTrackDifficulty(newTrack, method=ClimByBike_Index, curves=True ), 1)
+        
+        text += "{0},{1},{2},{3},{4}\n".format(f[11:-4], dif1, dif2, dif3, dif4)
+        
+        if must_plot == True:
+            plotInfo = TrackPlotInfo(newTrack)
+            plotInfo.ExtractTrackData()
+            vie = TrackViewer()
+            print ("\t\tPloting....  ", end =" ")
+            plot = vie.BuildPlot(plotInfo)
+            vie.SavePlotAs(plot, f+".png")
+            vie.ClearPlot(plot)
+        print ("\tFinished! Ok  .", end = " ")
+        print ("\tDIFF: ", str(round(dif1,2)))
+
+    f = open("comp.txt", "w")    
+    f.write(text)
+    f.close()
 
     print ("READY! :)")
 
 def main():
     #Prueba_GetSlopeChanges()
 
-    Prueba_ExtractSegments()
+    #Prueba_ExtractSegments()
 
-    #make_all_Segments()
+    make_all_Segments()
 
 
   

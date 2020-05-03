@@ -1,14 +1,12 @@
-from TrackReader import GPSVisualizerFileReader
+from TrackReader import GPSVisualizerFileReader, GPXFileReader
 import matplotlib.pyplot as plt
 
 def main(filename, min_degree = 45, scatter_all = False, scatter_curves = True, plot_curves = True):
     f_showAcc(filename, min_degree, scatter_all, scatter_curves, plot_curves)
 
 def f_showAcc(filename, degree, scatter_all, scatter_curves, plot_curves):
-    reader = GPSVisualizerFileReader()
-    reader.ReadFile(filename)
-
-    track = reader.GetTrack()    
+    reader = GPXFileReader(filename)
+    track = reader.Read()
 
     segments = track.GetSegments()
 
