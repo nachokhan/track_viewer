@@ -77,7 +77,7 @@ def Prueba_GetSlopeChanges():
 
 def Prueba_ExtractSegments():   
 
-    read2 = GPXFileReader("./data/gpx/rocas_deu.gpx")
+    read2 = GPXFileReader("./data/gpx/bosque1.gpx")
 
     track = read2.Read()
 
@@ -106,11 +106,11 @@ def make_all_Segments():
         plotInfo = TrackPlotInfo(newTrack)
         plotInfo.ExtractTrackData()
         vie = TrackViewer()
-        print (" Ploting....  ", end =" ")
+        print ("[t\tPloting....  ", end =" ")
         plot = vie.BuildPlot(plotInfo)
         vie.SavePlotAs(plot, f+".png")
         vie.ClearPlot(plot)
-        print (" Finished! Ok  ")
+        print ("Finished! Ok  ")
 
     print ("READY! :)")
 
@@ -118,6 +118,8 @@ def main():
     #Prueba_GetSlopeChanges()
 
     Prueba_ExtractSegments()
+
+    #make_all_Segments()
 
 
   
