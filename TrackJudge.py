@@ -23,7 +23,9 @@ def FIETS_Index(delta_h, distance, altitude):
     if altitude >= 1000:
         T = (altitude-1000) / 1000
     
-    return delta_h**2 / (distance * 10)
+    dif = 2 * delta_h**2 / (distance * 10) + T
+
+    return dif / 10 * 4
 
 
 def ClimByBike_Index(delta_h, distance, altitude):
@@ -71,11 +73,34 @@ def GetCurveDifficulty(degree, slope):
 
 
 
-def Nacho_Index(curves_intensity, distance):
-    sum = 0
+def Fisico_Index(segment):
 
-    
-    
+
+    dif = 0
+    ps = segment.GetPoints()
+
+    for i in range (len(ps)-1):
+        s = ps[i+1].Elevation - ps[i].Elevation
+        sl = ps[i].SlopeWith(ps[i+1])
+
+        if s > 0:
+            fact = getSF(sl)
+            dif += fact*s
+        else:
+            dif += -s/5
+
+    return dif / 70
+
+
+def getSF(sl):
+    sl = abs(sl)
+    if sl >= 0 and sl <  5: return 1.5
+    if sl >  6 and sl <  7: return 2.5
+    if sl >  8 and sl < 10: return 3
+    if sl > 11 and sl < 13: return 3.5
+    if sl > 14 and sl < 18: return 4
+    if sl > 19 and sl < 25: return 5
+    else: return 10
 
 def CalcSegmentDifficulty(segment, method, take_curves):
 
@@ -105,7 +130,8 @@ def CalcTrackDifficulty(track, method = FIETS_Index, curves = True):
 
     dif = 0
     for seg in track.GetSegments():
-        dif += CalcSegmentDifficulty(seg, method, curves)
+        #dif += CalcSegmentDifficulty(seg, method, curves)
+        dif += Fisico_Index(seg)
 
     return dif
 
