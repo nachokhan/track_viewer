@@ -52,7 +52,7 @@ class Segment:
         for i in range (1, l):
             av += self.__points[i].SlopeWith(self.__points[i-1])
         
-        return -av/l
+        return -av/l # slope is inverted here because comparing p2 with p1
 
     def GetPoints(self):
         """ Return a list of points """
@@ -65,6 +65,37 @@ class Segment:
         for i in range (points_range):
             d += self.__points[i].DistanceTo(self.__points[i+1])
         return d
+
+    def GetLengthUphills(self):
+        l = len(self.__points)
+        sum = 0
+        for i in range (1, l):
+            slope = self.__points[i].SlopeWith(self.__points[i-1])            
+            if slope < 0: # slope is inverted here because comparing p2 with p1
+                sum += self.__points[i].DistanceTo(self.__points[i-1])            
+        
+        return sum
+
+    def GetLengthDownhills(self):
+        l = len(self.__points)
+        sum = 0
+        for i in range (1, l):
+            slope = self.__points[i].SlopeWith(self.__points[i-1])            
+            if slope > 0: # slope is inverted here because comparing p2 with p1
+                sum += self.__points[i].DistanceTo(self.__points[i-1])            
+        
+        return sum
+        return 0
+
+    def GetLengthNoSlope(self):
+        l = len(self.__points)
+        sum = 0
+        for i in range (1, l):
+            slope = self.__points[i].SlopeWith(self.__points[i-1])            
+            if slope == 0:
+                sum += self.__points[i].DistanceTo(self.__points[i-1])            
+        
+        return sum
 
     def GetElevationExtremes(self):
         """ Returns the maximum and the minimum elevations of the segment"""
@@ -124,8 +155,8 @@ class Segment:
             p2 = self.__points[i+1]
             p3 = self.__points[i+2]
 
-            p2, i2 = self.GetNextPoint(p1, i+1)
-            p3, i3 = self.GetNextPoint(p2, i2+1)
+            p2, i2 = self._getNextPoint(p1, i+1)
+            p3, i3 = self._getNextPoint(p2, i2+1)
 
             d1 = p1.DistanceTo(p2)
             d2 = p2.DistanceTo(p3)
@@ -144,7 +175,7 @@ class Segment:
 
         return curves_count, degrees, mid_points, curves
 
-    def GetNextPoint(self, prev_p, index):
+    def _getNextPoint(self, prev_p, index):
         """ Returns the next point closer (min MIN_DISTANCE meters) to work with """
         MIN_DISTANCE = 10
 
@@ -156,7 +187,7 @@ class Segment:
         dist = p.DistanceTo(prev_p)
 
         if  dist < MIN_DISTANCE:
-            p, index = self.GetNextPoint(prev_p, index+1)
+            p, index = self._getNextPoint(prev_p, index+1)
         
         return p, index
 
