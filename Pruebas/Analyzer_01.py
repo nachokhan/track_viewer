@@ -76,54 +76,60 @@ def Prueba_GetSlopeChanges():
 
     plt.close()
 
-def Prueba_ExtractSegments():   
+def Prueba_ExtractSegments(must_plot = True):   
 
-    read2 = GPXFileReader("./data/gpx/dedo.gpx")
+    read2 = GPXFileReader("./data/gpx/pampa.gpx")
 
     track = read2.Read()
 
     newTrack = ExtractSegments_1(track)
 
+    dif = CalcTrackDifficulty(newTrack, method=FIETS_Index, curves=False )
+    print ("\n FIETS: ", dif, "\n")
     dif = CalcTrackDifficulty(newTrack, method=ClimByBike_Index, curves=False )
-    print ("\nDIFF: ", dif, "\n")
+    print ("\n CLIMB: ", dif, "\n")
 
-    #plotInfo = TrackPlotInfo(newTrack)
-    #plotInfo.ExtractTrackData(automatic_colors=True)
-    #vie = TrackViewer()
-    #plot = vie.BuildPlot(plotInfo, max_cols=3)
-    #vie.ShowPlot(plot)
-    #vie.ClearPlot(plot)
-    
+    if must_plot == True:
+        plotInfo = TrackPlotInfo(newTrack)
+        plotInfo.ExtractTrackData(automatic_colors=True)
+        vie = TrackViewer()
+        plot = vie.BuildPlot(plotInfo, max_cols=3)
+        vie.ShowPlot(plot)
+        vie.ClearPlot(plot)
+        
 
 def make_all_Segments(must_plot = False):
     import glob
 
-    files = [f for f in glob.glob("./data/gpx/*.gpx", recursive=False)]
+    files = [f for f in glob.glob("./data/gpx/sub/*.gpx", recursive=False)]
+    #files = [f for f in glob.glob("./data/gpx/*.gpx", recursive=False)]
+
+    files.sort()
 
     text = "Ruta, FIETS, CLIMB, FIETS(C), CLIMB(C)\n"
 
     for f in files:
-        print ("Processing ", f, "...", end =" ")
+
+        l1 = f.rfind("/")+1
+
+        print ("Processing ", f[l1:-4], "...\t", end =" ")
         read2 = GPXFileReader(f)
         track = read2.Read()
         newTrack = ExtractSegments_1(track)
-        dif1 = round(CalcTrackDifficulty(newTrack, method=FIETS_Index, curves=False )*10, 1)
-        dif2 = round(CalcTrackDifficulty(newTrack, method=ClimByBike_Index, curves=False ), 1)
-        dif3 = round(CalcTrackDifficulty(newTrack, method=FIETS_Index, curves=True )*10, 1)
-        dif4 = round(CalcTrackDifficulty(newTrack, method=ClimByBike_Index, curves=True ), 1)
+        dif1 = round(CalcTrackDifficulty(newTrack, method=FIETS_Index, curves=False ), 1)
         
-        text += "{0},{1},{2},{3},{4}\n".format(f[11:-4], dif1, dif2, dif3, dif4)
+        text += "{0},{1}\n".format(f[l1:-4], dif1)
         
         if must_plot == True:
             plotInfo = TrackPlotInfo(newTrack)
             plotInfo.ExtractTrackData()
             vie = TrackViewer()
-            print ("\t\tPloting....  ", end =" ")
+            print ("\tPloting....  ", end =" ")
             plot = vie.BuildPlot(plotInfo)
             vie.SavePlotAs(plot, f+".png")
             vie.ClearPlot(plot)
-        print ("\tFinished! Ok  .", end = " ")
-        print ("\tDIFF: ", str(round(dif1,2)))
+        print ("Ok  .", end = " ")
+        print (" - DIFF: ", str(round(dif1,2)))
 
     f = open("comp.txt", "w")    
     f.write(text)
@@ -133,10 +139,8 @@ def make_all_Segments(must_plot = False):
 
 def main():
     #Prueba_GetSlopeChanges()
-
-    #Prueba_ExtractSegments()
-
-    make_all_Segments()
+    #Prueba_ExtractSegments( )
+    make_all_Segments(True)
 
 
   
