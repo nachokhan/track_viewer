@@ -5,6 +5,7 @@ import plottxt
 from Pruebas import Curvas_01, Curvas_02
 from Pruebas import GPXRead_01
 from Pruebas import Analyzer_01
+from Pruebas import ConStrava
 
 def f_plottxt():
     sys.argv.append("../track_analyzer/other/output/rincon2___/10/VIEW_05_03_250.txt")
@@ -18,6 +19,8 @@ if __name__ == "__main__":
 
     #GPXRead_01.main()
 
-    Analyzer_01.main()
+    #Analyzer_01.main()
+
+    ConStrava.main()
    
     
