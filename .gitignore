@@ -6,3 +6,4 @@ __pycache__/*.pyc
 data/*
 data/rincon1.txt
 *.pyc
+.env
