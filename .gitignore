@@ -1,11 +1,4 @@
-.vscode/settings.json
-__pycache__/*.pyc
-.vscode/.ropeproject/objectdb
-.vscode/.ropeproject/config.py
-.vscode/launch.json
-data/*
-data/rincon1.txt
-*.pyc
+__pycache__
 .env
 token.txt
 lalala.json
