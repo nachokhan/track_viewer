@@ -7,3 +7,5 @@ data/*
 data/rincon1.txt
 *.pyc
 .env
+token.txt
+lalala.json
