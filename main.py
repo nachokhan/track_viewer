@@ -15,7 +15,7 @@ def f_plottxt():
 if __name__ == "__main__":
     
     #Curvas_02.main("./data/gpx/subidapotre.gpx", 90, scatter_all=False, scatter_curves=True, plot_curves=True)
-    #Curvas_01.main()
+    Curvas_01.main()
 
     #GPXRead_01.main()
 

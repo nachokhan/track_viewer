@@ -30,22 +30,22 @@ class Segment:
     def __init__(self):
         self.__points = []
    
-    def AddPoint(self, point):
+    def add_point(self, point):
         """ Adds a new GPS point to the segment """
         self.__points.append(point)
 
-    def AddPoints(self, points):
+    def add_points(self, points):
         """ Adds a list of points to the segment """
         self.__points += points
 
-    def GetRawSlope(self):
+    def get_raw_slope(self):
         """ Returns the raw slope of the whole segment (p0 -> pn) """
-        dh = self.GetAccElevation()+self.GetAccDescent()
-        dx = self.GetLength()
+        dh = self.get_acc_elevation()+self.get_acc_descent()
+        dx = self.get_length()
         if dx == 0: return 0
         return dh/dx * 100
 
-    def GetAvSlope(self):
+    def get_avg_slope(self):
         """ Returns the slope average of the whole segment """
         l = len(self.__points)
         av = 0
@@ -54,11 +54,11 @@ class Segment:
         
         return -av/l # slope is inverted here because comparing p2 with p1
 
-    def GetPoints(self):
+    def get_points(self):
         """ Return a list of points """
         return self.__points
 
-    def GetLength(self):
+    def get_length(self):
         """ Returns the lenght of the whole segment in meters """      
         d = 0
         points_range = len(self.__points)-1
@@ -66,7 +66,7 @@ class Segment:
             d += self.__points[i].DistanceTo(self.__points[i+1])
         return d
 
-    def GetLengthUphills(self):
+    def get_length_uphills(self):
         l = len(self.__points)
         sum = 0
         for i in range (1, l):
@@ -76,7 +76,7 @@ class Segment:
         
         return sum
 
-    def GetLengthDownhills(self):
+    def get_length_downhills(self):
         l = len(self.__points)
         sum = 0
         for i in range (1, l):
@@ -87,7 +87,7 @@ class Segment:
         return sum
         return 0
 
-    def GetLengthNoSlope(self):
+    def get_length_flats(self):
         l = len(self.__points)
         sum = 0
         for i in range (1, l):
@@ -97,7 +97,7 @@ class Segment:
         
         return sum
 
-    def GetElevationExtremes(self):
+    def get_elevation_extremes(self):
         """ Returns the maximum and the minimum elevations of the segment"""
         max = min = self.__points[0].Elevation
         for p in self.__points:
@@ -106,7 +106,7 @@ class Segment:
 
         return (min, max)
 
-    def GetAccElevation(self):
+    def get_acc_elevation(self):
         """ Returns the accumulated ascending elevation of the segment """
         acc = 0
         q_points = len(self.__points)-1
@@ -119,7 +119,7 @@ class Segment:
                 acc += diff
         return  acc
 
-    def GetAccDescent(self):
+    def get_acc_descent(self):
         """ Returns the accumulated descending elevation ('-' sign) of the segment """
         acc = 0
         q_points = len(self.__points)-1
@@ -132,7 +132,7 @@ class Segment:
                 acc += diff
         return  acc
 
-    def GetCurves(self, min_degree = 80, min_p_sep=5):
+    def get_curves(self, min_degree = 80, min_p_sep=5):
         """Return quatity of curves in the segment that have at least X dgrees
 
         Keyword Arguments:
@@ -204,18 +204,18 @@ class DrawableSegment(Segment):
         self.__color = "red"
         self.__name = "noname"
 
-    def SetColor(self, color):
+    def set_color(self, color):
         """ Sets the color to plot the segment """
         self.__color = color
     
-    def GetColor(self):
+    def get_color(self):
         """ Returns the color to plot the segment """
         return self.__color
     
-    def SetName(self, name):
+    def set_name(self, name):
         """ Sets the name of the segment """
         self.__name = name
 
-    def GetName(self):
+    def get_name(self):
         """ Returns the name of the segment """
         return self.__name

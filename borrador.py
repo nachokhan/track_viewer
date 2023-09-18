@@ -14,10 +14,10 @@ def OpenStreetMap():
     reader.ReadFile("./data/rocas2.txt")
     track = reader.GetTrack()
 
-    maxlon = track.GetExtremPoint("n")[1]
-    minlon = track.GetExtremPoint("s")[1]
-    maxlat = track.GetExtremPoint("w")[0]
-    minlat = track.GetExtremPoint("e")[0]
+    maxlon = track.get_extreme_point("n")[1]
+    minlon = track.get_extreme_point("s")[1]
+    maxlat = track.get_extreme_point("w")[0]
+    minlat = track.get_extreme_point("e")[0]
     formato = "png"
 
     osmmmmm2 = f'http://render.openstreetmap.org/cgi-bin/export?bbox={minlon},{minlat},{maxlon},{maxlat}&scale=29033&format=png'
@@ -46,10 +46,10 @@ def Thunder():
     tracki = TrackPlotInfo(track)
     tracki.ExtractTrackData()
 
-    maxlon = track.GetExtremPoint("n")[1]
-    minlon = track.GetExtremPoint("s")[1]
-    maxlat = track.GetExtremPoint("w")[0]
-    minlat = track.GetExtremPoint("e")[0]
+    maxlon = track.get_extreme_point("n")[1]
+    minlon = track.get_extreme_point("s")[1]
+    maxlat = track.get_extreme_point("w")[0]
+    minlat = track.get_extreme_point("e")[0]
 
     prop = (abs(maxlon-minlon)) / (abs(maxlat-minlat))
     
@@ -67,7 +67,7 @@ def Thunder():
     fig, ax = plt.subplots(figsize = (15,15))
 
 
-    segments = track.GetSegments()
+    segments = track.get_segments()
 
     xs = []
     ys = []

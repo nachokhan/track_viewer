@@ -29,7 +29,7 @@ def SegmentFromChangePositions(segment, segmentations):
     for actual in segmentations:
         pts = points[prev:actual]        
         seg = Segment()
-        seg.AddPoints (pts)
+        seg.add_points (pts)
         segments.append(seg)
         prev = actual    
 
@@ -63,7 +63,7 @@ def ExtractSegments_1(track, method = 0):
     changePositions = SegmentByHeight(uniqueSegment2, changePositions)
 
     newSegments = SegmentFromChangePositions(uniqueSegment2, changePositions)
-    newTrack.AddSegments(newSegments)
+    newTrack.add_segments(newSegments)
     return newTrack
 
 def NormalizeElevations(segment):
@@ -96,7 +96,7 @@ def NormalizeElevations(segment):
 
 
     newSegment = Segment()
-    newSegment.AddPoints(newPoints)
+    newSegment.add_points(newPoints)
 
     return newSegment
 
@@ -121,7 +121,7 @@ def RemoveShortDistances(segment, min_distance = 4):
         del points[i]
 
     newSegment = Segment()
-    newSegment.AddPoints(points)
+    newSegment.add_points(points)
 
     return newSegment
     
@@ -144,14 +144,14 @@ def SegmentByHeight(segment, segmentations):
         l2 = segmentations[i]
 
         p_seg = Segment()
-        p_seg.AddPoints (points[l0:l1])
-        p_delta_h = p_seg.GetAccElevation() + p_seg.GetAccDescent()
-        p_delta_h_p = max (p_seg.GetAccElevation(), abs(p_seg.GetAccDescent()))
+        p_seg.add_points (points[l0:l1])
+        p_delta_h = p_seg.get_acc_elevation() + p_seg.get_acc_descent()
+        p_delta_h_p = max (p_seg.get_acc_elevation(), abs(p_seg.get_acc_descent()))
         p_delta_h = p_delta_h_p * sign(p_delta_h)
 
         seg = Segment()
-        seg.AddPoints (points[l1:l2])
-        delta_h = seg.GetAccElevation() + seg.GetAccDescent()
+        seg.add_points (points[l1:l2])
+        delta_h = seg.get_acc_elevation() + seg.get_acc_descent()
        
         factor = abs(p_delta_h * ((-5.9459*10**(-6))+0.19891))
 

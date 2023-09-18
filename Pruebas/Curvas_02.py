@@ -8,7 +8,7 @@ def f_showAcc(filename, degree, scatter_all, scatter_curves, plot_curves):
     reader = GPXFileReader(filename)
     track = reader.Read()
 
-    segments = track.GetSegments()
+    segments = track.get_segments()
 
     dis = 0
     acc = 0

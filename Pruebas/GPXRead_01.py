@@ -8,6 +8,6 @@ def main():
 
     track = reader.Read()
 
-    print (track.GetLength())
-    print (track.GetBoundaries())
+    print (track.get_length())
+    print (track.get_boundaries())
 

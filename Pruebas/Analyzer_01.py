@@ -14,7 +14,7 @@ def Prueba_GetSlopeChanges():
     read = GPSVisualizerFileReader()
     track = read.ReadFile("./data/txt/rincon1.txt")
     
-    segments = track.GetSegments()
+    segments = track.get_segments()
 
 
     fig = plt.figure(figsize=(55, 25))
@@ -34,12 +34,12 @@ def Prueba_GetSlopeChanges():
         points = s.GetPoints()
 
         for p in points:
-            nuevSeg.AddPoint(p)
+            nuevSeg.add_point(p)
 
 
     pos = GetSlopeSignChangesPosition(nuevSeg)
         
-    points = nuevSeg.GetPoints()
+    points = nuevSeg.get_points()
 
     dist=[0]
     eles=[points[0].Elevation]

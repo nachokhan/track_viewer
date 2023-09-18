@@ -48,8 +48,8 @@ class GPXFileReader:
             trackPoints =  getXMLNodes(root, GPX_STR_TRACK_POINTS)
 
             newTrack = Track()
-            newTrack.SetName(trackName)
-            newTrack.SetAuthor(authorName)
+            newTrack.set_name(trackName)
+            newTrack.set_author(authorName)
 
             segment = Segment()
 
@@ -59,9 +59,9 @@ class GPXFileReader:
                 elev = float(getXMLNodeText(pts, ["ele"]))
                 gpsPoint = GPSPoint(lat, lon, elev)
 
-                segment.AddPoint(gpsPoint)
+                segment.add_point(gpsPoint)
 
-            newTrack.AddSegment(segment)
+            newTrack.add_segment(segment)
         
         except TypeError as err:
             print("Error parsing GPX File: {0}".format(self.__file))
@@ -119,13 +119,13 @@ class GPSVisualizerFileReader:
 
         if first_element == 'T':
             point, name, color = self.GetValuesFromLine(line)
-            self.__segment.AddPoint(point)
-            self.__segment.SetColor(color)
-            self.__segment.SetName(name)
+            self.__segment.add_point(point)
+            self.__segment.set_color(color)
+            self.__segment.set_name(name)
 
         elif first_element == 'type' :
             self.__segment = DrawableSegment()
-            self.__track.AddSegment(self.__segment)           
+            self.__track.add_segment(self.__segment)           
         
     # Read the lines and obtain the values
     def GetValuesFromLine(self, line):

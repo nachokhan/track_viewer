@@ -10,7 +10,6 @@ This class defines a unique point in the map with:
 Main Public methods are:
 
     - DistanceTo (point p)  (the distance between p and itself)
-    
 
 """
 from math import sin, cos, sqrt, atan2, radians, degrees, atan
@@ -23,13 +22,13 @@ class GPSPoint:
         self.Longitude = float(lon)
         self.Elevation = float(elev)
 
-    def DistanceTo(self, point):
-        delta_x = self.h_distance_to(point)
+    def distance_to(self, point):
+        delta_x = self._h_distance_to(point)
         delta_y = abs(self.Elevation - point.Elevation)        
         d = sqrt( delta_x**2 + delta_y**2)        
         return d
 
-    def BearingWith(self, point):
+    def bearing_with(self, point):
         """ Return bearing between self and another point """
         lat1 = self.Latitude
         lat2 = point.Latitude
@@ -56,16 +55,16 @@ class GPSPoint:
 
         return round (pepe-ang, 2)
 
-    def SlopeWith(self, p2):
+    def slope_with(self, p2):
         """ Get the slope (in %) between a point a itself """
         delta_y = p2.Elevation - self.Elevation
-        delta_x = self.h_distance_to(p2)
+        delta_x = self._h_distance_to(p2)
 
         if delta_x != 0:
             return (delta_y / delta_x * 100)
         return 100        
     
-    def h_distance_to(self, p2):
+    def _h_distance_to(self, p2):
         """ Returns the horizontal distance between a point itself,
         as there were at same elevation """
         R = 6373.0
