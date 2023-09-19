@@ -1,5 +1,5 @@
-from TrackReader import GPSVisualizerFileReader, Track
-from TrackViewer import TrackViewer, TrackPlotInfo
+from track_reader.GPSVisualizerFileReader import GPSVisualizerFileReader
+from TrackViewer import TrackPlotInfo
 from matplotlib import pylab as plt
 import math
 
@@ -11,8 +11,8 @@ https://docs.microsoft.com/en-us/azure/azure-maps/zoom-levels-and-tile-grid?tabs
 
 def OpenStreetMap():
     reader = GPSVisualizerFileReader()
-    reader.ReadFile("./data/rocas2.txt")
-    track = reader.GetTrack()
+    reader.read_file("./data/rocas2.txt")
+    track = reader.get_track()
 
     maxlon = track.get_extreme_point("n")[1]
     minlon = track.get_extreme_point("s")[1]
@@ -41,8 +41,8 @@ def getCenter(minlon, maxlon, minlat, maxlat, zoom):
 
 def Thunder():
     reader = GPSVisualizerFileReader()
-    reader.ReadFile("./data/rincon1.txt")
-    track = reader.GetTrack()
+    reader.read_file("./data/rincon1.txt")
+    track = reader.get_track()
     tracki = TrackPlotInfo(track)
     tracki.ExtractTrackData()
 

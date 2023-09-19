@@ -4,9 +4,9 @@ This module manages all the needed functions to
 make an analysis of teh Track
 """
 
-from trackdatamodel.Track import Track
-from trackdatamodel.Segment import Segment
-from trackdatamodel.GPSPoint import GPSPoint
+from track_model.Track import Track
+from track_model.Segment import Segment
+from track_model.GPSPoint import GPSPoint
 
 def sign(x) :
     """ Returns the sign of X. Zero is considered negative because
@@ -17,7 +17,7 @@ def sign(x) :
     if x == 0: return -1
 
 
-def SegmentFromChangePositions(segment, segmentations):
+def segment_from_change_position(segment, segmentations):
 
     points = segment.GetPoints()   
     segments = []    
@@ -36,8 +36,9 @@ def SegmentFromChangePositions(segment, segmentations):
 
     return segments
 
-def ExtractSegments_1(track, method = 0):
-    """Make a new track with one or more segments. Segments are
+def extract_segment_1(track, method = 0):
+    """
+    Make a new track with one or more segments. Segments are
     being divided according different algoritmhs. At the time 
     of writing, the best algorithm is still not determined.
 
@@ -54,19 +55,19 @@ def ExtractSegments_1(track, method = 0):
 
     uniqueSegment = track.GetSegments()[0]   
 
-    RemoveShortDistances(uniqueSegment, 4)
-    uniqueSegment2 =  NormalizeElevations(uniqueSegment)
+    remove_short_distances(uniqueSegment, 4)
+    uniqueSegment2 =  normalize_elevation(uniqueSegment)
 
     #graficar_dos_x(uniqueSegment, uniqueSegment2)
 
-    changePositions = GetSlopeSignChangesPosition(uniqueSegment2)
-    changePositions = SegmentByHeight(uniqueSegment2, changePositions)
+    changePositions = get_slope_sign_change_position(uniqueSegment2)
+    changePositions = segment_by_height(uniqueSegment2, changePositions)
 
-    newSegments = SegmentFromChangePositions(uniqueSegment2, changePositions)
+    newSegments = segment_from_change_position(uniqueSegment2, changePositions)
     newTrack.add_segments(newSegments)
     return newTrack
 
-def NormalizeElevations(segment):
+def normalize_elevation(segment):
 
     import copy
     points = segment.GetPoints()
@@ -100,8 +101,10 @@ def NormalizeElevations(segment):
 
     return newSegment
 
-def RemoveShortDistances(segment, min_distance = 4):
-    """ Exactly that """
+def remove_short_distances(segment, min_distance = 4):
+    """ 
+    Exactly that 
+    """
 
     points = segment.GetPoints().copy()
     pointsToDelete = []
@@ -125,8 +128,10 @@ def RemoveShortDistances(segment, min_distance = 4):
 
     return newSegment
     
-def SegmentByHeight(segment, segmentations):
-    """ Makes a new segmentation based on the heights difference """
+def segment_by_height(segment, segmentations):
+    """ 
+    Makes a new segmentation based on the heights difference 
+    """
     
     mh,Mh = segment.GetElevationExtremes()
 
@@ -164,8 +169,9 @@ def SegmentByHeight(segment, segmentations):
     return newSegmentations
 
 
-def GetSlopeSignChangesPosition(segment):
-    """Returns a list of points indicating the indexes of the points
+def get_slope_sign_change_position(segment):
+    """
+    Returns a list of points indicating the indexes of the points
     where there is a slope sign change (up- or downhill's chage)   
     """
     positions = []       # Positions of slope sign change

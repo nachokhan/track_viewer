@@ -2,8 +2,8 @@
 # Track represents a collection of Segments (ideally correlatives segments)
 #########
 
-from trackdatamodel.Segment import Segment
-from trackdatamodel.GPSPoint import GPSPoint
+from track_model.Segment import Segment
+from track_model.GPSPoint import GPSPoint
 
 class Track:
     def __init__(self):

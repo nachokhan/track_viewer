@@ -1,6 +1,6 @@
 import sys
 
-from trackdatamodel.Segment import Segment
+from track_model.Segment import Segment
 import plottxt
 from Pruebas import Curvas_01, Curvas_02
 from Pruebas import GPXRead_01

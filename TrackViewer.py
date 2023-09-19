@@ -7,9 +7,8 @@ Track info saved in the data files readen by TrackReader
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import math
-import TrackReader
-from trackdatamodel.Segment import Segment, DrawableSegment
-from trackdatamodel.Track import Track
+from track_model.Segment import DrawableSegment
+
 
 class TrackPlotInfo:
 

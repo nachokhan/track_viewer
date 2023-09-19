@@ -1,7 +1,6 @@
 from TrackAnalyzer import *
-from Pruebas.prob_curvas import puntos_1 as pts1
-from TrackReader import GPSVisualizerFileReader
-from TrackReader import GPXFileReader
+from track_reader.GPSVisualizerFileReader import GPSVisualizerFileReader
+from track_reader.GPXFileReader import GPXFileReader
 
 
 from TrackViewer import TrackPlotInfo, TrackViewer
@@ -12,7 +11,7 @@ from matplotlib import pyplot as plt
 
 def Prueba_GetSlopeChanges():
     read = GPSVisualizerFileReader()
-    track = read.ReadFile("./data/txt/rincon1.txt")
+    track = read.read_file("./data/txt/rincon1.txt")
     
     segments = track.get_segments()
 
@@ -37,7 +36,7 @@ def Prueba_GetSlopeChanges():
             nuevSeg.add_point(p)
 
 
-    pos = GetSlopeSignChangesPosition(nuevSeg)
+    pos = get_slope_sign_change_position(nuevSeg)
         
     points = nuevSeg.get_points()
 
@@ -80,9 +79,9 @@ def Prueba_ExtractSegments(must_plot = True):
 
     read2 = GPXFileReader("./data/gpx/pampa.gpx")
 
-    track = read2.Read()
+    track = read2.read()
 
-    newTrack = ExtractSegments_1(track)
+    newTrack = extract_segment_1(track)
 
     dif = CalcTrackDifficulty(newTrack, method=FIETS_Index, curves=False )
     print ("\n FIETS: ", dif, "\n")
@@ -114,8 +113,8 @@ def make_all_Segments(must_plot = False):
 
         print ("Processing ", f[l1:-4], "...\t", end =" ")
         read2 = GPXFileReader(f)
-        track = read2.Read()
-        newTrack = ExtractSegments_1(track)
+        track = read2.read()
+        newTrack = extract_segment_1(track)
         dif1 = round(CalcTrackDifficulty(newTrack, method=FIETS_Index, curves=False ), 1)
         
         text += "{0},{1}\n".format(f[l1:-4], dif1)

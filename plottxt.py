@@ -6,18 +6,16 @@ the respective PNG file.
 
 """
 
-from TrackReader import GPSVisualizerFileReader
-from trackdatamodel import Track
+from track_reader.GPSVisualizerFileReader import GPSVisualizerFileReader
 from TrackViewer import TrackViewer, TrackPlotInfo
 from pathlib import Path
-import sys
 
 
 def Plotear(fileName):
     
     reader = GPSVisualizerFileReader()
-    reader.ReadFile(fileName)
-    track = reader.GetTrack()
+    reader.read_file(fileName)
+    track = reader.get_track()
 
     index = len(fileName)-fileName.rfind(".")-1
     imageName = fileName[:-index] + "png"

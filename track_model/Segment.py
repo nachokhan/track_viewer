@@ -21,7 +21,7 @@ Main Public methods are:
 
 """
 
-from trackdatamodel.GPSPoint import GPSPoint
+from track_model.GPSPoint import GPSPoint
 from math import radians, degrees
 
 
