@@ -6,30 +6,56 @@ the respective PNG file.
 
 """
 
+from track_model.Track import Track
 from track_reader.GPSVisualizerFileReader import GPSVisualizerFileReader
 from TrackViewer import TrackViewer, TrackPlotInfo
 from pathlib import Path
 
 
-def Plotear(fileName):
+class PlotTrack:
+
+    def set_track_from_gpsvisualizer_file(self, file_name):
+        """
+        Read GPS data from a file and set the track for this object
+        """
+        reader = GPSVisualizerFileReader()
+
+        reader.read_file(file_name)
+        self.set_track(reader.get_track())
+        
+        index = len(file_name)-file_name.rfind(".")-1
+        self.image_file_name = file_name[:-index] + "png"
     
-    reader = GPSVisualizerFileReader()
-    reader.read_file(fileName)
-    track = reader.get_track()
 
-    index = len(fileName)-fileName.rfind(".")-1
-    imageName = fileName[:-index] + "png"
+    def set_track(self, track: Track):
+        """
+        Set the track data for this object
+        """
+        self.track = track
 
-    title = Path(fileName).stem
 
-    pInfo = TrackPlotInfo(track, title)
-    pInfo.ExtractTrackData()
+    def plot_track(self, file_name=None):
+        """
+        Plot the track data and save as an image file
+        """
 
-    viewer = TrackViewer()    
-    plot1 = viewer.BuildPlot(pInfo, intersection_window=20)
-    viewer.SavePlotAs(plot1, imageName)
+        if not self.track:
+            raise Exception("There is no track no plot.")
+        
+        if not file_name:
+            file_name = self.image_file_name
 
-    plot1.close()
+        title = Path(file_name).stem
+
+        pInfo = TrackPlotInfo(self.track, title)
+        pInfo.ExtractTrackData()
+
+        viewer = TrackViewer()    
+        plot1 = viewer.BuildPlot(pInfo, intersection_window=20)
+        viewer.SavePlotAs(plot1, file_name)
+
+        plot1.close()
+
 
 
 def main(fileToParse):
@@ -41,9 +67,12 @@ def main(fileToParse):
     print ('\nFiles to plot:')
     print("\n".join(finalList))
 
+    plotter = PlotTrack()
+
     for f in finalList:
         print ("Plotting file '", f, "' ...........", end= " ")
-        Plotear(f)
+        plotter.set_track_from_gpsvisualizer_file(f)
+        plotter.plot_track()
         print ("Done!")
 
 

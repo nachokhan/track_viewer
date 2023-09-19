@@ -1,11 +1,10 @@
-from TrackAnalyzer import *
+from track_analyzer.TrackAnalyzer import TrackAnalyzer
 from track_reader.GPSVisualizerFileReader import GPSVisualizerFileReader
 from track_reader.GPXFileReader import GPXFileReader
 
-
 from TrackViewer import TrackPlotInfo, TrackViewer
 
-from TrackJudge import CalcSegmentDifficulty, CalcTrackDifficulty, FIETS_Index, ClimByBike_Index
+from track_analyzer.TrackJudge import CalcSegmentDifficulty, CalcTrackDifficulty, FIETS_Index, ClimByBike_Index
 
 from matplotlib import pyplot as plt
 
@@ -36,7 +35,7 @@ def Prueba_GetSlopeChanges():
             nuevSeg.add_point(p)
 
 
-    pos = get_slope_sign_change_position(nuevSeg)
+    pos = TrackAnalyzer.get_slope_sign_change_position(nuevSeg)
         
     points = nuevSeg.get_points()
 
