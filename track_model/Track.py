@@ -41,7 +41,7 @@ class Track:
     def set_name(self, name):
         self.__name = name
     
-    def set_name(self):
+    def get_name(self):
         return self.__name
 
     def set_author(self, author):
