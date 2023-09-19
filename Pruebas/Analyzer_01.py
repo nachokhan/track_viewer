@@ -1,8 +1,10 @@
 from track_analyzer.TrackAnalyzer import TrackAnalyzer
+from track_model.Segment import Segment
 from track_reader.GPSVisualizerFileReader import GPSVisualizerFileReader
 from track_reader.GPXFileReader import GPXFileReader
 
-from track_viewer.TrackViewer import TrackPlotInfo, TrackViewer
+from track_viewer.TrackViewer import TrackViewer
+from track_viewer.TrackPlotInfo import TrackPlotInfo
 
 from track_analyzer.TrackJudge import CalcSegmentDifficulty, CalcTrackDifficulty, FIETS_Index, ClimByBike_Index
 
@@ -80,7 +82,7 @@ def Prueba_ExtractSegments(must_plot = True):
 
     track = read2.read()
 
-    newTrack = extract_segment_1(track)
+    newTrack = TrackAnalyzer().extract_segment_1(track)
 
     dif = CalcTrackDifficulty(newTrack, method=FIETS_Index, curves=False )
     print ("\n FIETS: ", dif, "\n")
@@ -113,7 +115,7 @@ def make_all_Segments(must_plot = False):
         print ("Processing ", f[l1:-4], "...\t", end =" ")
         read2 = GPXFileReader(f)
         track = read2.read()
-        newTrack = extract_segment_1(track)
+        newTrack = TrackAnalyzer().extract_segment_1(track)
         dif1 = round(CalcTrackDifficulty(newTrack, method=FIETS_Index, curves=False ), 1)
         
         text += "{0},{1}\n".format(f[l1:-4], dif1)

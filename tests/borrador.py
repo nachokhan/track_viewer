@@ -1,5 +1,5 @@
 from track_reader.GPSVisualizerFileReader import GPSVisualizerFileReader
-from track_viewer.TrackViewer import TrackPlotInfo
+from track_viewer.TrackPlotInfo import TrackPlotInfo
 from matplotlib import pylab as plt
 import math
 
@@ -38,6 +38,7 @@ def getCenter(minlon, maxlon, minlat, maxlat, zoom):
     height = deltalat * m
 
     return (width, height)
+
 
 def Thunder():
     reader = GPSVisualizerFileReader()
