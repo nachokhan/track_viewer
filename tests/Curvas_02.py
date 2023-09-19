@@ -23,13 +23,13 @@ def f_showAcc(filename, degree, scatter_all, scatter_curves, plot_curves):
         grid = plt.GridSpec(1, 1, wspace=0.5, hspace=0.5)
         ax1 = fig.add_subplot(grid[0, 0])
 
-        c_count, intens, mid_p_curve, all_p_curve = seg.GetCurves(min_degree = degree, min_p_sep = 5)
+        c_count, intens, mid_p_curve, all_p_curve = seg.get_curves(min_degree = degree, min_p_sep = 5)
 
-        puntos = seg.GetPoints()
+        puntos = seg.get_points()
 
         # Show the whole route
-        eje_x = [( i.Longitude  ) for i in seg.GetPoints()]
-        eje_y = [( i.Latitude  ) for i in seg.GetPoints()]
+        eje_x = [( i.Longitude  ) for i in seg.get_points()]
+        eje_y = [( i.Latitude  ) for i in seg.get_points()]
         ax1.plot(eje_x, eje_y, color = "blue")
 
         # Build axes with the middle point of each curve
