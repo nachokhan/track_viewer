@@ -25,8 +25,8 @@ class GPXFileReader:
             root = BeautifulSoup(fp, features="lxml")
 
         try:            
-            trackName = self.get_XML_node_text(root, GPX_STR_TRACK_NAME)
-            authorName = self.get_XML_node_text(root, GPX_STR_AUTHOR_NAME)
+            trackName = self.get_XML_node_text(root, GPX_STR_TRACK_NAME) or 'noname'
+            authorName = self.get_XML_node_text(root, GPX_STR_AUTHOR_NAME) or 'noname'
             trackPoints =  self.get_XML_nodes(root, GPX_STR_TRACK_POINTS)
 
             newTrack = Track()
