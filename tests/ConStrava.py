@@ -1,10 +1,10 @@
 import requests
 import webbrowser
 
+from tests.data import CLIENT_SECRET, CLIENT_ID
+
 
 def main():
-    CLIENT_SECRET= 'a894f828ebc4cb29861f4c9c04292e7645cddbb9'
-    CLIENT_ID = 47324    
     redirect_uri = "localhost" 
     SCOPE = ["read", "read_all", "profile:read_all", "profile:write", "activity:read", "activity:read_all", "activity:write", "", "", ""]
 
