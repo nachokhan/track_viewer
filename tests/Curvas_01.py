@@ -1,10 +1,10 @@
 import matplotlib.pyplot as plt
 
-from Pruebas.prob_curvas import puntos_1 as pts1
-from Pruebas.prob_curvas import puntos_2 as pts2
-from Pruebas.prob_curvas import puntos_3 as pts3
-from Pruebas.prob_curvas import puntos_4 as pts4
-from Pruebas.prob_curvas import contar_curvas as contar
+from tests.prob_curvas import puntos_1 as pts1
+from tests.prob_curvas import puntos_2 as pts2
+from tests.prob_curvas import puntos_3 as pts3
+from tests.prob_curvas import puntos_4 as pts4
+from tests.prob_curvas import contar_curvas as contar
 
 def RevisarCurvas(pts):
     a,b,c = contar(pts, 45)
