@@ -8,7 +8,7 @@ the respective PNG file.
 
 from track_model.Track import Track
 from track_reader.GPSVisualizerFileReader import GPSVisualizerFileReader
-from TrackViewer import TrackViewer, TrackPlotInfo
+from track_viewer.TrackViewer import TrackViewer, TrackPlotInfo
 from pathlib import Path
 
 

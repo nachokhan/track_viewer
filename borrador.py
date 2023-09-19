@@ -1,5 +1,5 @@
 from track_reader.GPSVisualizerFileReader import GPSVisualizerFileReader
-from TrackViewer import TrackPlotInfo
+from track_viewer.TrackViewer import TrackPlotInfo
 from matplotlib import pylab as plt
 import math
 

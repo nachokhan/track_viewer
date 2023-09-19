@@ -2,7 +2,7 @@ from track_analyzer.TrackAnalyzer import TrackAnalyzer
 from track_reader.GPSVisualizerFileReader import GPSVisualizerFileReader
 from track_reader.GPXFileReader import GPXFileReader
 
-from TrackViewer import TrackPlotInfo, TrackViewer
+from track_viewer.TrackViewer import TrackPlotInfo, TrackViewer
 
 from track_analyzer.TrackJudge import CalcSegmentDifficulty, CalcTrackDifficulty, FIETS_Index, ClimByBike_Index
 
