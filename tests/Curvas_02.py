@@ -54,13 +54,13 @@ def f_showAcc(filename, degree, scatter_all, scatter_curves, plot_curves):
 
         # Show some Segment info on the console
         print("SEGMENTO")
-        print ("\tDist ->: ", round(seg.GetLength(),2), "m")
-        print ("\tAcc+ ->: ", round(seg.GetAccElevation(),2), "m")
-        print ("\tAcc- ->: ", round(seg.GetAccDescent(),2), "m")
+        print ("\tDist ->: ", round(seg.get_length(),2), "m")
+        print ("\tAcc+ ->: ", round(seg.get_acc_elevation(),2), "m")
+        print ("\tAcc- ->: ", round(seg.get_acc_descent(),2), "m")
         print ("\tCurv ->: ", c_count, " curves")
-        dis += seg.GetLength()
-        acc += seg.GetAccElevation()
-        acc2 += seg.GetAccDescent()
+        dis += seg.get_length()
+        acc += seg.get_acc_elevation()
+        acc2 += seg.get_acc_descent()
         curv += c_count
         
         # Scatter ALL points

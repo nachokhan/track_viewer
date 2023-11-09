@@ -184,7 +184,7 @@ class Segment:
         
         p = self.__points[index]
 
-        dist = p.DistanceTo(prev_p)
+        dist = p.distance_to(prev_p)
 
         if  dist < MIN_DISTANCE:
             p, index = self._getNextPoint(prev_p, index+1)
